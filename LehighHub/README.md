@@ -1,6 +1,6 @@
 # Lehigh Hub
 
-A small, local-only hackathon prototype: a campus home page, club bulletin board, dining-dollar budget helper, sample bus board, student resource directory, and editable demo profile. Every schedule, club, resource, and balance shown here is sample information; the app is not connected to Lehigh University systems.
+A small, local-only hackathon prototype: a campus home page, club bulletin board, dining-dollar budget helper, transit route board, student resource directory, and editable demo profile. Club and resource listings are examples; the bus board shows the supplied route-stop database and base frequencies, without live arrivals. The app is not connected to Lehigh University systems.
 
 ## Requirements
 
@@ -45,8 +45,8 @@ Keep the terminal open while presenting. Press **Control+C** to stop the server.
 - `/` — welcome page and links to each section
 - `/clubs` — sample clubs and a local post preview form
 - `/dining` — daily dining budget calculator
-- `/buses` — static sample route and schedule
-- `/resources` — fictional student resource examples
+- `/buses` — local-time route availability, ordered stops, and a coordinate-based map from the supplied transit data
+- `/resources` — official Lehigh academic, campus support, billing, career, and news-access links
 - `/signup` — creates an in-memory demo profile with clickable interests
 - `/profile` — edits profile details and uploads a local profile picture
 

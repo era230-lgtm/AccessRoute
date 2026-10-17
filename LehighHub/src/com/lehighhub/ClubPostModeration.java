@@ -19,7 +19,13 @@ final class ClubPostModeration {
             "wetbacks", "kike", "kikes", "paki", "pakis", "raghead", "ragheads", "towelhead", "towelheads", "faggot",
             "faggots", "fag", "fags", "dyke", "dykes", "tranny", "trannies", "retard", "retards", "retarded",
             "retardation", "coon", "coons", "darkie", "darkies", "jap", "japs", "zipperhead", "zipperheads",
-            "hebe", "hebes", "hymie", "hymies", "yid", "yids", "kraut", "krauts", "redskin", "redskins", "dothead", "dotheads");
+            "hebe", "hebes", "hymie", "hymies", "yid", "yids", "kraut", "krauts", "redskin", "redskins", "dothead", "dotheads",
+            "sex", "sexual", "sexually", "sexy", "sext", "sexting", "porn", "porno", "pornography", "pornographic", "xxx",
+            "erotic", "erotica", "nude", "nudes", "naked", "topless", "milf", "milfs", "dilf", "dilfs", "penis", "penises",
+            "vagina", "vaginas", "vulva", "vulvas", "clitoris", "boob", "boobs", "breast", "breasts", "dildo", "dildos",
+            "vibrator", "vibrators", "masturbate", "masturbating", "masturbation", "orgasm", "orgasms", "cum", "cumming",
+            "cumshot", "ejaculate", "ejaculation", "blowjob", "blowjobs", "handjob", "handjobs", "hookup", "hookups",
+            "onlyfans", "hentai", "stripper", "strippers", "brothel", "brothels", "prostitute", "prostitutes", "escort", "escorts");
 
     private ClubPostModeration() { }
 

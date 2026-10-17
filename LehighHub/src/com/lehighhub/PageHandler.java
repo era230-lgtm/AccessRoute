@@ -103,13 +103,14 @@ public class PageHandler implements HttpHandler {
             }
             page = ProfilePage.render(message, profile);
         } else if ("/clubs".equals(path)) {
+            removeInappropriateClubPostings();
             String query = exchange.getRequestURI().getRawQuery();
             boolean posted = "posted=1".equals(query);
             message = posted ? "Your meeting was posted." : "";
             page = ClubsPage.render(message, profile, clubPostings, false, "");
         }
         else if ("/dining".equals(path)) page = DiningPage.render(message, profile);
-        else if ("/buses".equals(path)) page = BusesPage.render(message, profile);
+        else if ("/buses".equals(path)) page = BusesPage.render(message, profile, fields.getOrDefault("route", "CC"));
         else if ("/resources".equals(path)) page = ResourcesPage.render(message, profile);
         else if ("/".equals(path)) page = homePage(profile);
         else {
@@ -147,6 +148,7 @@ public class PageHandler implements HttpHandler {
     }
 
     private void handleClubPosting(HttpExchange exchange, StudentProfile profile) throws IOException {
+        removeInappropriateClubPostings();
         Map<String, String> fields = parseForm(exchange);
         String title = safeField(fields, "title");
         String rawTime = safeField(fields, "time");
@@ -181,6 +183,11 @@ public class PageHandler implements HttpHandler {
             clubPostings.add(new ClubPosting(title, time, location, topics, "open".equals(access), type));
         }
         redirect(exchange, "/clubs?posted=1");
+    }
+
+    private void removeInappropriateClubPostings() {
+        clubPostings.removeIf(posting ->
+                ClubPostModeration.containsBlockedLanguage(posting.getTitle(), posting.getLocation()));
     }
 
     private List<String> selectedClubTopics(Map<String, String> fields) {
@@ -358,8 +365,8 @@ public class PageHandler implements HttpHandler {
                 return "Enter a non-negative balance and a number of days from 1 to 365.";
             }
         }
-        if ("/buses".equals(path)) return "Showing the sample “" + safeField(fields, "route") + "” route below.";
-        if ("/resources".equals(path)) return "Showing sample resources for “" + safeField(fields, "category") + "” below.";
+        if ("/buses".equals(path)) return "Showing the “" + BusesPage.routeName(safeField(fields, "route")) + "” route below.";
+        if ("/resources".equals(path)) return "Browse official Lehigh student resources below.";
         return "";
     }
 
@@ -464,8 +471,8 @@ public class PageHandler implements HttpHandler {
                 + "<section class=\"section-heading\"><div><p class=\"eyebrow\">A FEW GOOD SHORTCUTS</p><h2>Campus life, in one place.</h2></div><p>Built by students, for the everyday stuff.</p></section>"
                 + "<section class=\"feature-grid\"><a class=\"feature-card feature-clubs\" href=\"/clubs\"><span class=\"feature-number\">01 / COMMUNITY</span><span class=\"feature-icon\">✳</span><h3>Find your people</h3><p>Browse a sample club board and draft a bulletin post.</p><span class=\"card-arrow\">↗</span></a>"
                 + "<a class=\"feature-card feature-dining\" href=\"/dining\"><span class=\"feature-number\">02 / FOOD</span><span class=\"feature-icon\">◒</span><h3>Plan your dining dollars</h3><p>Turn a sample balance into a simple daily target.</p><span class=\"card-arrow\">↗</span></a>"
-                + "<a class=\"feature-card feature-buses\" href=\"/buses\"><span class=\"feature-number\">03 / GETTING AROUND</span><span class=\"feature-icon\">↗</span><h3>Find a bus route</h3><p>Check an example campus route and its demo schedule.</p><span class=\"card-arrow\">↗</span></a>"
-                + "<a class=\"feature-card feature-resources\" href=\"/resources\"><span class=\"feature-number\">04 / SUPPORT</span><span class=\"feature-icon\">＋</span><h3>Discover resources</h3><p>Explore a curated sample of student support options.</p><span class=\"card-arrow\">↗</span></a></section>"
+                + "<a class=\"feature-card feature-buses\" href=\"/buses\"><span class=\"feature-number\">03 / GETTING AROUND</span><span class=\"feature-icon\">↗</span><h3>Find a bus route</h3><p>Check active schedules, ordered stops, and stop locations.</p><span class=\"card-arrow\">↗</span></a>"
+                + "<a class=\"feature-card feature-resources\" href=\"/resources\"><span class=\"feature-number\">04 / SUPPORT</span><span class=\"feature-icon\">＋</span><h3>Discover resources</h3><p>Find official campus services, student tools, and learning resources.</p><span class=\"card-arrow\">↗</span></a></section>"
                 + "<section class=\"home-note\"><span class=\"note-mark\">H</span><p><strong>A small hub for big campus energy.</strong><br>Made as a student hackathon prototype. Always check official Lehigh channels for current details.</p></section>";
         return HtmlLayout.page("Home", "home", "", content, profile);
     }
