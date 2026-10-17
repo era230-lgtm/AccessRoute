@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Pattern;
 
 /** Routes page requests and keeps demo profiles in server memory. */
 public class PageHandler implements HttpHandler {
@@ -34,8 +33,6 @@ public class PageHandler implements HttpHandler {
     private final Map<String, StudentProfile> profiles = new ConcurrentHashMap<>();
     private final List<ClubPosting> clubPostings = new CopyOnWriteArrayList<>();
     private static final DateTimeFormatter CLUB_TIME_LABEL = DateTimeFormatter.ofPattern("h:mm a");
-    private static final Pattern EXPLICIT_LANGUAGE = Pattern.compile(
-            "(?iu)(?<![\\p{L}\\p{N}_])(?:fuck(?:er|ing|ed|s)?|motherfucker|shit(?:ty|ting|s)?|bitch(?:es|ing)?|asshole(?:s)?|ass|bastard(?:s)?|crap|damn|dick(?:s)?|prick(?:s)?|cunt(?:s)?|cock(?:s)?|piss(?:ed|ing)?|pussy|slut(?:s)?|whore(?:s)?)(?![\\p{L}\\p{N}_])");
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -156,8 +153,8 @@ public class PageHandler implements HttpHandler {
         String location = safeField(fields, "location");
         String access = safeField(fields, "access");
         String type = safeField(fields, "type");
-        if (EXPLICIT_LANGUAGE.matcher(title + " " + location).find()) {
-            String problem = "Explicit language is not allowed in club posts.";
+        if (ClubPostModeration.containsBlockedLanguage(title, location)) {
+            String problem = "Profanity and slurs are not allowed in club posts. Please revise the title or location.";
             send(exchange, 400, ClubsPage.render(problem, profile, clubPostings, true, problem), "text/html; charset=utf-8");
             return;
         }
