@@ -9,7 +9,7 @@ public final class SignupPage {
     public static String render(String message) {
         int currentYear = Year.now().getValue();
         int latestYear = currentYear + 4;
-        String content = "<section class=\"account-hero\"><p class=\"eyebrow\">YOUR LEHIGH HUB</p>"
+        String content = "<section class=\"account-hero\"><p class=\"eyebrow\">YOUR LU LINK</p>"
                 + "<h1>Make this place<br><em>your own.</em></h1><p>Create a lightweight demo profile to collect your interests and campus details in one spot.</p></section>"
                 + HtmlLayout.notice(message)
                 + "<section class=\"account-card signup-card\"><div class=\"account-card-heading\"><span class=\"account-step\">01</span><div><p class=\"eyebrow\">CREATE A PROFILE</p><h2>Join the hub</h2></div></div>"

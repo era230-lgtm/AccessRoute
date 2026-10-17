@@ -1,4 +1,4 @@
-# Lehigh Hub
+# LU Link
 
 A small, local-only hackathon prototype: a campus home page, club bulletin board, dining-dollar budget helper, transit route board, student resource directory, and editable demo profile. Club and resource listings are examples; the bus board shows the supplied route-stop database and base frequencies, without live arrivals. The app is not connected to Lehigh University systems.
 

@@ -14,7 +14,7 @@ public final class HtmlLayout {
         StringBuilder html = new StringBuilder();
         html.append("<!doctype html><html lang=\"en\"><head>");
         html.append("<meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
-        html.append("<title>").append(escape(title)).append(" · Lehigh Hub</title>");
+        html.append("<title>").append(escape(title)).append(" · LU Link</title>");
         html.append("<link rel=\"stylesheet\" href=\"/css/shared.css\">");
         if (pageCss != null && !pageCss.isEmpty()) {
             html.append("<link rel=\"stylesheet\" href=\"/css/").append(escape(pageCss)).append("\">");
@@ -22,7 +22,7 @@ public final class HtmlLayout {
         html.append("<link rel=\"stylesheet\" href=\"/css/controls.css\">");
         html.append("</head><body><a class=\"skip-link\" href=\"#main-content\">Skip to content</a>");
         html.append("<header class=\"site-header\"><div class=\"header-inner\">");
-        html.append("<a class=\"brand\" href=\"/\" aria-label=\"Lehigh Hub home\"><span class=\"brand-mark\">H</span><span>Lehigh <b>Hub</b></span></a>");
+        html.append("<a class=\"brand\" href=\"/\" aria-label=\"LU Link home\"><span class=\"brand-mark\">LU</span><span><b>Link</b></span></a>");
         html.append("<nav class=\"main-nav\" aria-label=\"Main navigation\">");
         navLink(html, "/", "Home", activePage.equals("home"));
         navLink(html, "/clubs", "Clubs", activePage.equals("clubs"));
@@ -47,8 +47,10 @@ public final class HtmlLayout {
         }
         html.append("</a></div></div></header>");
         html.append("<main id=\"main-content\" class=\"page-wrap\">").append(content).append("</main>");
-        html.append("<footer class=\"site-footer\"><div><span>LEHIGH HUB</span><span>Built for the Mountain Hawk community</span></div>");
+        html.append("<footer class=\"site-footer\"><div><span>LU LINK</span><span>Built for the Mountain Hawk community</span></div>");
         html.append("<p>Hackathon prototype · Sample information only · Not an official university service</p></footer>");
+        html.append("<div class=\"custom-cursor\" popover=\"manual\" aria-hidden=\"true\"></div>");
+        html.append("<script>(function(){if(!window.matchMedia('(hover: hover) and (pointer: fine)').matches)return;const cursor=document.querySelector('.custom-cursor');document.documentElement.classList.add('custom-cursor-enabled');if(cursor.showPopover)cursor.showPopover();window.raiseCustomCursor=function(){if(!cursor.showPopover)return;if(cursor.matches(':popover-open'))cursor.hidePopover();cursor.showPopover();};let visible=false;function move(event){cursor.style.left=event.clientX+'px';cursor.style.top=event.clientY+'px';if(!visible){cursor.classList.add('is-visible');visible=true;}const target=event.target instanceof Element?event.target:null;cursor.classList.toggle('is-ring',!!(target&&target.closest('a,button,select,input:not([type=checkbox]):not([type=radio]),textarea,input[type=checkbox],input[type=radio],label.interest-choice,.post-topic-choice,.post-access-options label,[role=button]')));}document.addEventListener('pointermove',move);document.addEventListener('pointerleave',()=>cursor.classList.remove('is-visible'));document.addEventListener('pointerenter',()=>cursor.classList.add('is-visible'));})();</script>");
         html.append("</body></html>");
         return html.toString();
     }

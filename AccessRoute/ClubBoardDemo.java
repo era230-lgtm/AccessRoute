@@ -88,7 +88,7 @@ public class ClubBoardDemo {
 
         String html = """
             <header class="hero">
-              <div class="eyebrow">LEHIGH HUB · COMMUNITY</div>
+              <div class="eyebrow">LU LINK · COMMUNITY</div>
               <h1>Find your people.</h1>
               <p>Low-pressure hangouts, campus clubs, and things to do together.</p>
               <div class="demo-note">⚠ Demonstration only — all events below are sample data, not live Lehigh University listings.</div>
@@ -132,7 +132,7 @@ public class ClubBoardDemo {
                   <button type="submit">Publish hangout</button>
                 </form>
               </section>
-              <footer>Lehigh Hub · A student community prototype</footer>
+              <footer>LU Link · A student community prototype</footer>
             </main>
             """.formatted(escape(interests), categoryOptions(categoryFilter), shown, cards);
 
@@ -189,7 +189,7 @@ public class ClubBoardDemo {
         return """
             <!doctype html><html lang="en"><head><meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>Lehigh Hub · Club Board</title>
+            <title>LU Link · Club Board</title>
             <style>
               *{box-sizing:border-box}body{margin:0;background:#f4f6fa;color:#19233a;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
               .hero{padding:46px max(22px,calc((100% - 1050px)/2)) 36px;background:linear-gradient(130deg,#142d55,#254f85);color:white}

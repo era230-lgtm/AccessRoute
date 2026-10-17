@@ -1,6 +1,6 @@
 # HawkTilities
 
-Workspace containing the AccessRoute Java starter and the Lehigh Hub student services hackathon prototype.
+Workspace containing the AccessRoute Java starter and the LU Link student services hackathon prototype.
 
-- [Lehigh Hub](LehighHub/README.md)
+- [LU Link](LehighHub/README.md)
 - AccessRoute Java demo

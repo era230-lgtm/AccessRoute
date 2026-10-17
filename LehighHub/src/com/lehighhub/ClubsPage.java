@@ -40,23 +40,23 @@ public class ClubsPage {
 
         appendMeetingCard(content, "sample-makers", "arts", "open", "club", "ARTS &amp; CULTURE", "01",
                 "Mountain Makers", "Creative meetups, open studio nights, and low-pressure ways to try something new.",
-                "Thursdays · 6:30 PM", "UC Room 202", "Lehigh Hub sample", "", List.of("arts"), "club-art-one");
+                "Thursdays · 6:30 PM", "UC Room 202", "LU Link sample", "", List.of("arts"), "club-art-one");
         appendMeetingCard(content, "sample-trails", "outdoors", "open", "club", "OUTDOORS", "02",
                 "Lehigh Trail Collective", "Weekend walks and trail days for anyone who wants a breath of fresh air.",
-                "Saturdays · 10:00 AM", "Alumni Building steps", "Lehigh Hub sample", "", List.of("outdoors"), "club-art-two");
+                "Saturdays · 10:00 AM", "Alumni Building steps", "LU Link sample", "", List.of("outdoors"), "club-art-two");
         appendMeetingCard(content, "sample-design", "technology,service", "open", "club", "TECH &amp; DESIGN", "03",
                 "Design for Good", "Students teaming up to sketch, prototype, and share ideas for community projects.",
-                "Tuesdays · 7:00 PM", "Packard Lab 112", "Lehigh Hub sample", "", List.of("technology", "service"), "club-art-three");
+                "Tuesdays · 7:00 PM", "Packard Lab 112", "LU Link sample", "", List.of("technology", "service"), "club-art-three");
         appendMeetingCard(content, "sample-garden", "food,outdoors", "open", "club", "FOOD &amp; GARDEN", "04",
                 "Campus Garden Crew", "Grow, learn, and share what is in season at our friendly garden work sessions.",
-                "Wednesdays · 4:30 PM", "Community Garden", "Lehigh Hub sample", "", List.of("food", "outdoors"), "club-art-four");
+                "Wednesdays · 4:30 PM", "Community Garden", "LU Link sample", "", List.of("food", "outdoors"), "club-art-four");
 
         for (PageHandler.ClubPosting posting : postings) {
             String label = posting.getType().equals("hangout") ? "HANGOUT"
                     : posting.getTopics().isEmpty() ? "CLUB MEETING" : posting.getTopics().get(0).toUpperCase();
             appendMeetingCard(content, posting.getId(), String.join(",", posting.getTopics()),
                     posting.isOpen() ? "open" : "closed", posting.getType(), label, "✳", posting.getTitle(),
-                    "Community meeting posted to Lehigh Hub.", posting.getTimeLabel(), posting.getLocation(),
+                    "Community meeting posted to LU Link.", posting.getTimeLabel(), posting.getLocation(),
                     posting.getPosterName(), posting.getPosterUsername(), posting.getTopics(), "club-art-posted");
         }
         content.append("</section>");
@@ -66,8 +66,8 @@ public class ClubsPage {
 
         appendMeetingDialog(content, profile);
         appendPostDialog(content);
-        content.append("<script>(function(){const postDialog=document.getElementById('post-dialog'),openPost=document.querySelector('[data-open-post]');if(openPost)openPost.addEventListener('click',()=>postDialog.showModal());document.querySelector('[data-close-post]').addEventListener('click',()=>postDialog.close());postDialog.addEventListener('click',event=>{if(event.target===postDialog)postDialog.close();});const topic=document.getElementById('filter-topic'),access=document.getElementById('filter-access'),kind=document.getElementById('filter-kind'),cards=Array.from(document.querySelectorAll('.club-card')),results=document.getElementById('filter-results');function filterCards(){let visible=0;cards.forEach(card=>{const topics=(card.dataset.topics||'').split(',');const show=(topic.value==='all'||topics.includes(topic.value))&&(access.value==='all'||card.dataset.access===access.value)&&(kind.value==='all'||card.dataset.kind===kind.value);card.hidden=!show;if(show)visible++;});results.textContent=visible+' '+(visible===1?'meeting':'meetings');}[topic,access,kind].forEach(filter=>filter.addEventListener('change',filterCards));filterCards();")
-                .append("const meetingDialog=document.getElementById('meeting-dialog'),meetingCards=Array.from(document.querySelectorAll('[data-meeting-id]')),attendeeList=document.getElementById('attendee-list'),rsvpId=document.getElementById('rsvp-meeting-id'),rsvpButton=document.getElementById('rsvp-button');function openMeeting(card){document.getElementById('meeting-title').textContent=card.dataset.title;document.getElementById('meeting-poster').textContent=card.dataset.poster+(card.dataset.username?' (@'+card.dataset.username+')':'');document.getElementById('meeting-time').textContent=card.dataset.time;document.getElementById('meeting-location').textContent=card.dataset.location;document.getElementById('meeting-access').textContent=card.dataset.access==='open'?'Open meeting':'Closed meeting';document.getElementById('meeting-kind').textContent=card.dataset.kind==='hangout'?'Hangout':'Club';const topics=card.dataset.topics.split(',').filter(Boolean);document.getElementById('meeting-topics').innerHTML=topics.length?topics.map(t=>'<span class=\"club-topic-chip topic-'+t+'\">'+t.charAt(0).toUpperCase()+t.slice(1)+'</span>').join(''):'<span class=\"club-topic-chip topic-general\">General</span>';const id=card.dataset.meetingId;if(rsvpId)rsvpId.value=id;attendeeList.replaceChildren();const template=document.querySelector('template[data-rsvps-for=\"'+id+'\"]');if(template)attendeeList.append(template.content.cloneNode(true));const going=template&&template.dataset.currentGoing==='true';if(rsvpButton){rsvpButton.disabled=!!going;rsvpButton.textContent=going?'You’re going':'RSVP';}meetingDialog.showModal();}meetingCards.forEach(card=>{card.addEventListener('click',()=>openMeeting(card));card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openMeeting(card);}});});document.querySelector('[data-close-meeting]').addEventListener('click',()=>meetingDialog.close());meetingDialog.addEventListener('click',event=>{if(event.target===meetingDialog)meetingDialog.close();});");
+        content.append("<script>(function(){const postDialog=document.getElementById('post-dialog'),openPost=document.querySelector('[data-open-post]');if(openPost)openPost.addEventListener('click',()=>{postDialog.showModal();if(window.raiseCustomCursor)window.raiseCustomCursor();});document.querySelector('[data-close-post]').addEventListener('click',()=>postDialog.close());postDialog.addEventListener('click',event=>{if(event.target===postDialog)postDialog.close();});const topic=document.getElementById('filter-topic'),access=document.getElementById('filter-access'),kind=document.getElementById('filter-kind'),cards=Array.from(document.querySelectorAll('.club-card')),results=document.getElementById('filter-results');function filterCards(){let visible=0;cards.forEach(card=>{const topics=(card.dataset.topics||'').split(',');const show=(topic.value==='all'||topics.includes(topic.value))&&(access.value==='all'||card.dataset.access===access.value)&&(kind.value==='all'||card.dataset.kind===kind.value);card.hidden=!show;if(show)visible++;});results.textContent=visible+' '+(visible===1?'meeting':'meetings');}[topic,access,kind].forEach(filter=>filter.addEventListener('change',filterCards));filterCards();")
+                .append("const meetingDialog=document.getElementById('meeting-dialog'),meetingCards=Array.from(document.querySelectorAll('[data-meeting-id]')),attendeeList=document.getElementById('attendee-list'),rsvpId=document.getElementById('rsvp-meeting-id'),rsvpButton=document.getElementById('rsvp-button');function openMeeting(card){document.getElementById('meeting-title').textContent=card.dataset.title;document.getElementById('meeting-poster').textContent=card.dataset.poster+(card.dataset.username?' (@'+card.dataset.username+')':'');document.getElementById('meeting-time').textContent=card.dataset.time;document.getElementById('meeting-location').textContent=card.dataset.location;document.getElementById('meeting-access').textContent=card.dataset.access==='open'?'Open meeting':'Closed meeting';document.getElementById('meeting-kind').textContent=card.dataset.kind==='hangout'?'Hangout':'Club';const topics=card.dataset.topics.split(',').filter(Boolean);document.getElementById('meeting-topics').innerHTML=topics.length?topics.map(t=>'<span class=\"club-topic-chip topic-'+t+'\">'+t.charAt(0).toUpperCase()+t.slice(1)+'</span>').join(''):'<span class=\"club-topic-chip topic-general\">General</span>';const id=card.dataset.meetingId;if(rsvpId)rsvpId.value=id;attendeeList.replaceChildren();const template=document.querySelector('template[data-rsvps-for=\"'+id+'\"]');if(template)attendeeList.append(template.content.cloneNode(true));const going=template&&template.dataset.currentGoing==='true';if(rsvpButton){rsvpButton.disabled=!!going;rsvpButton.textContent=going?'You’re going':'RSVP';}meetingDialog.showModal();if(window.raiseCustomCursor)window.raiseCustomCursor();}meetingCards.forEach(card=>{card.addEventListener('click',()=>openMeeting(card));card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openMeeting(card);}});});document.querySelector('[data-close-meeting]').addEventListener('click',()=>meetingDialog.close());meetingDialog.addEventListener('click',event=>{if(event.target===meetingDialog)meetingDialog.close();});");
         if (reopenPostDialog) content.append("postDialog.showModal();");
         if (meetingToOpen != null && !meetingToOpen.isEmpty()) {
             content.append("const restoreMeeting=meetingCards.find(item=>item.dataset.meetingId===")
@@ -93,7 +93,7 @@ public class ClubsPage {
                 .append("</b></div><div class=\"club-card-body\"><h3>").append(HtmlLayout.escape(title))
                 .append("</h3><p>").append(HtmlLayout.escape(description)).append("</p>")
                 .append(topicChips(topicList));
-        if ("Lehigh Hub sample".equals(poster)) content.append(sampleByline());
+        if ("LU Link sample".equals(poster)) content.append(sampleByline());
         else content.append(posterByline(poster, username));
         content.append("<div class=\"club-meta\"><span>◷ ").append(HtmlLayout.escape(time))
                 .append("</span><span>▦ ").append(HtmlLayout.escape(location)).append("</span><span class=\"meeting-access ")
@@ -137,7 +137,7 @@ public class ClubsPage {
     private static void appendMeetingDialog(StringBuilder content, PageHandler.StudentProfile profile) {
         content.append("<dialog class=\"meeting-dialog\" id=\"meeting-dialog\" aria-labelledby=\"meeting-title\"><button class=\"dialog-close meeting-dialog-close\" type=\"button\" aria-label=\"Close meeting details\" data-close-meeting>×</button>")
                 .append("<header class=\"meeting-dialog-header\"><p class=\"eyebrow\">MEETING DETAILS</p><h2 id=\"meeting-title\"></h2><div class=\"meeting-essential\"><span><small>Posted by</small><b id=\"meeting-poster\"></b></span><span><small>When</small><b id=\"meeting-time\"></b></span><span><small>Where</small><b id=\"meeting-location\"></b></span></div><div class=\"meeting-detail-badges\"><span id=\"meeting-access\"></span><span id=\"meeting-kind\"></span><div id=\"meeting-topics\" class=\"club-topic-list\"></div></div></header>")
-                .append("<section class=\"attendee-section\"><div class=\"attendee-heading\"><div><p class=\"eyebrow\">COMMUNITY</p><h3>Who's going?</h3></div><span class=\"attendee-note\">RSVPs from Lehigh Hub profiles</span></div><div class=\"attendee-list\" id=\"attendee-list\"></div></section>");
+                .append("<section class=\"attendee-section\"><div class=\"attendee-heading\"><div><p class=\"eyebrow\">COMMUNITY</p><h3>Who's going?</h3></div><span class=\"attendee-note\">RSVPs from LU Link profiles</span></div><div class=\"attendee-list\" id=\"attendee-list\"></div></section>");
         if (profile == null) {
             content.append("<a class=\"rsvp-button\" href=\"/signup\">Create a profile to RSVP ↗</a>");
         } else {
@@ -173,7 +173,7 @@ public class ClubsPage {
     }
 
     private static String sampleByline() {
-        return "<div class=\"club-posted-by sample-byline\"><span class=\"club-avatar\" aria-hidden=\"true\">LH</span><span><small>Sample listing</small><b>Lehigh Hub</b></span></div>";
+        return "<div class=\"club-posted-by sample-byline\"><span class=\"club-avatar\" aria-hidden=\"true\">LU</span><span><small>Sample listing</small><b>LU Link</b></span></div>";
     }
 
     private static String posterByline(String name, String username) {

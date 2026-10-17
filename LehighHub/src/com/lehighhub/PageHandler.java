@@ -114,7 +114,7 @@ public class PageHandler implements HttpHandler {
                 return;
             }
             if ("welcome=1".equals(exchange.getRequestURI().getRawQuery())) {
-                message = "Welcome to Lehigh Hub, " + profile.getName() + "! Your demo profile is ready.";
+                message = "Welcome to LU Link, " + profile.getName() + "! Your demo profile is ready.";
             } else if ("saved=1".equals(exchange.getRequestURI().getRawQuery())) {
                 message = "Your profile details have been updated.";
             } else if ("photo=uploaded".equals(exchange.getRequestURI().getRawQuery())) {
@@ -434,7 +434,7 @@ public class PageHandler implements HttpHandler {
         } catch (NumberFormatException ignored) {
             // Fall through to the student eligibility reminder.
         }
-        return "Reminder: Lehigh Hub profiles are for current students. Enter an expected graduation year from "
+        return "Reminder: LU Link profiles are for current students. Enter an expected graduation year from "
                 + currentYear + " through " + latestYear + ".";
     }
 
