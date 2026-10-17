@@ -19,6 +19,7 @@ public final class HtmlLayout {
         if (pageCss != null && !pageCss.isEmpty()) {
             html.append("<link rel=\"stylesheet\" href=\"/css/").append(escape(pageCss)).append("\">");
         }
+        html.append("<link rel=\"stylesheet\" href=\"/css/controls.css\">");
         html.append("</head><body><a class=\"skip-link\" href=\"#main-content\">Skip to content</a>");
         html.append("<header class=\"site-header\"><div class=\"header-inner\">");
         html.append("<a class=\"brand\" href=\"/\" aria-label=\"Lehigh Hub home\"><span class=\"brand-mark\">H</span><span>Lehigh <b>Hub</b></span></a>");

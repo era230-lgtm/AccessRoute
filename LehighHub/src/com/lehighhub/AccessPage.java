@@ -8,7 +8,7 @@ public final class AccessPage {
         String safeEmail = HtmlLayout.escape(email);
         return "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
                 + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Welcome · Lehigh Hub</title>"
-                + "<link rel=\"stylesheet\" href=\"/css/shared.css\"><link rel=\"stylesheet\" href=\"/css/access.css\"></head><body>"
+                + "<link rel=\"stylesheet\" href=\"/css/shared.css\"><link rel=\"stylesheet\" href=\"/css/access.css\"><link rel=\"stylesheet\" href=\"/css/controls.css\"></head><body>"
                 + "<main class=\"access-shell\"><section class=\"access-story\"><a class=\"access-brand\" href=\"/\"><span class=\"access-brand-mark\">H</span><span>Lehigh <b>Hub</b></span></a>"
                 + "<div class=\"access-story-copy\"><p class=\"access-eyebrow\">YOUR CAMPUS, CONNECTED</p><h1>All of Lehigh,<br><em>one place.</em></h1>"
                 + "<p class=\"access-description\">Find your people, plan your day, and get to the campus resources you need—all in one welcoming hub.</p>"

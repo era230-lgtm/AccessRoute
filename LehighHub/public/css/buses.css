@@ -20,6 +20,8 @@
 .route-select select:focus{border-color:#79583a;outline:0;box-shadow:0 0 0 4px #79583a1c}
 @media(max-width:800px){.route-controls{align-items:stretch;flex-direction:column;gap:9px}.route-select,.route-select select{width:100%;min-width:0}.active-filter{width:max-content;max-width:100%}}
 @media(max-width:680px){.route-controls{padding:10px}.active-filter{min-height:46px;padding:0 11px;font-size:11px}.route-select select{height:48px;font-size:13px}}
+.route-controls{align-items:end;gap:18px;padding:0;border:0;border-radius:0;background:transparent}
+@media(max-width:800px){.route-controls{align-items:stretch;gap:9px;padding:0;border:0;background:transparent}}
 .map-loading,.map-error{display:grid;place-items:center;height:100%;margin:0;padding:20px;color:#687781;font-size:12px;text-align:center}
 .map-error{color:#9c4d38}
 .leaflet-container{font:11px/1.4 var(--sans,Arial,sans-serif);background:#e7e5dd}

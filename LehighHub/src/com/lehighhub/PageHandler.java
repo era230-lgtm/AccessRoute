@@ -566,6 +566,7 @@ public class PageHandler implements HttpHandler {
         String css;
         switch (fileName) {
             case "shared.css": css = "shared.css"; break;
+            case "controls.css": css = "controls.css"; break;
             case "access.css": css = "access.css"; break;
             case "clubs.css": css = "clubs.css"; break;
             case "dining.css": css = "dining.css"; break;
