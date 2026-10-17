@@ -1,0 +1,16 @@
+package com.lehighhub;
+
+/** Club discovery and a local-only bulletin post preview. */
+public class ClubsPage {
+    public static String render(String message) {
+        String content = "<section class=\"page-hero clubs-hero\"><div><p class=\"eyebrow\">COMMUNITY / CLUB BULLETIN</p><h1>Find your <em>people.</em></h1><p>Meet the groups making things happen around campus. These listings are examples for the prototype.</p></div><div class=\"hero-stamp\">JOIN<br>IN<span>✳</span></div></section>"
+                + HtmlLayout.notice(message)
+                + "<div class=\"page-toolbar\"><div><span class=\"eyebrow\">SAMPLE CLUBS</span><h2>Something for every side of you.</h2></div><span class=\"count-pill\">04 EXAMPLES</span></div>"
+                + "<section class=\"club-grid\"><article class=\"club-card\"><div class=\"club-card-top club-art-one\"><span>ARTS & CULTURE</span><b>01</b></div><div class=\"club-card-body\"><h3>Mountain Makers</h3><p>Creative meetups, open studio nights, and low-pressure ways to try something new.</p><div class=\"club-meta\"><span>◷ Thursdays · 6:30 PM</span><span>▦ UC Room 202</span></div><a href=\"#post-form\">Ask about joining <b>↗</b></a></div></article>"
+                + "<article class=\"club-card\"><div class=\"club-card-top club-art-two\"><span>OUTDOORS</span><b>02</b></div><div class=\"club-card-body\"><h3>Lehigh Trail Collective</h3><p>Weekend walks and trail days for anyone who wants a breath of fresh air.</p><div class=\"club-meta\"><span>◷ Saturdays · 10:00 AM</span><span>▦ Alumni Building steps</span></div><a href=\"#post-form\">Ask about joining <b>↗</b></a></div></article>"
+                + "<article class=\"club-card\"><div class=\"club-card-top club-art-three\"><span>TECH & DESIGN</span><b>03</b></div><div class=\"club-card-body\"><h3>Design for Good</h3><p>Students teaming up to sketch, prototype, and share ideas for community projects.</p><div class=\"club-meta\"><span>◷ Tuesdays · 7:00 PM</span><span>▦ Packard Lab 112</span></div><a href=\"#post-form\">Ask about joining <b>↗</b></a></div></article>"
+                + "<article class=\"club-card\"><div class=\"club-card-top club-art-four\"><span>FOOD & GARDEN</span><b>04</b></div><div class=\"club-card-body\"><h3>Campus Garden Crew</h3><p>Grow, learn, and share what is in season at our friendly garden work sessions.</p><div class=\"club-meta\"><span>◷ Wednesdays · 4:30 PM</span><span>▦ Community Garden</span></div><a href=\"#post-form\">Ask about joining <b>↗</b></a></div></article></section>"
+                + "<section class=\"post-panel\" id=\"post-form\"><div><p class=\"eyebrow\">YOUR TURN</p><h2>Have a club update?</h2><p>Draft a bulletin post preview. It stays on this page and is not published.</p></div><form method=\"post\" action=\"/clubs\"><label for=\"club\">Club name</label><input id=\"club\" name=\"club\" required maxlength=\"60\" placeholder=\"e.g. Campus Garden Crew\"><label for=\"update\">What's happening?</label><textarea id=\"update\" name=\"update\" rows=\"3\" maxlength=\"240\" placeholder=\"Share a meeting, event, or invitation\"></textarea><button class=\"button button-dark\" type=\"submit\">Preview post <span>↗</span></button></form></section>";
+        return HtmlLayout.page("Club bulletin", "clubs", "clubs.css", content);
+    }
+}

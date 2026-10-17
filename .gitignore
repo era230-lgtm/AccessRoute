@@ -1,0 +1,9 @@
+# Java compilation output
+*.class
+/LehighHub/out/
+
+# macOS metadata
+.DS_Store
+
+# Keep the original nested repository metadata local; the parent repo tracks its source files.
+/AccessRoute/.git/
