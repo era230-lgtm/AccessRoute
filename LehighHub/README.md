@@ -1,6 +1,6 @@
 # Lehigh Hub
 
-A small, local-only hackathon prototype: a campus home page, club bulletin board, dining-dollar budget helper, sample bus board, and student resource directory. Every schedule, club, resource, and balance shown here is sample information; the app is not connected to Lehigh University systems.
+A small, local-only hackathon prototype: a campus home page, club bulletin board, dining-dollar budget helper, sample bus board, student resource directory, and editable demo profile. Every schedule, club, resource, and balance shown here is sample information; the app is not connected to Lehigh University systems.
 
 ## Requirements
 
@@ -47,5 +47,7 @@ Keep the terminal open while presenting. Press **Control+C** to stop the server.
 - `/dining` — daily dining budget calculator
 - `/buses` — static sample route and schedule
 - `/resources` — fictional student resource examples
+- `/signup` — creates an in-memory demo profile with clickable interests
+- `/profile` — edits profile details and uploads a local profile picture
 
-All interactions use ordinary HTML forms and Java request handling. Form submissions reload the page; no JavaScript is used.
+All interactions use ordinary HTML forms and Java request handling. Form submissions reload the page; no JavaScript is used. Demo profiles are kept in server memory and reset when the server stops. The signup password field is only a visual prototype: the password is discarded and never used for authentication. Uploaded profile pictures are saved under `data/profile-pictures` on the computer running the server.

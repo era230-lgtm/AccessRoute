@@ -1,0 +1,29 @@
+package com.lehighhub;
+
+/** Signup screen for the local demo profile. No password is saved or checked. */
+public final class SignupPage {
+    private SignupPage() { }
+
+    public static String render(String message) {
+        String content = "<section class=\"account-hero\"><p class=\"eyebrow\">YOUR LEHIGH HUB</p>"
+                + "<h1>Make this place<br><em>your own.</em></h1><p>Create a lightweight demo profile to collect your interests and campus details in one spot.</p></section>"
+                + HtmlLayout.notice(message)
+                + "<section class=\"account-card signup-card\"><div class=\"account-card-heading\"><span class=\"account-step\">01</span><div><p class=\"eyebrow\">CREATE A PROFILE</p><h2>Join the hub</h2></div></div>"
+                + "<div class=\"demo-privacy-note\"><strong>Prototype note</strong><span>This is a local demo profile. The password is discarded after signup; no account authentication is implemented.</span></div>"
+                + "<form method=\"post\" action=\"/signup\" class=\"account-form\"><div class=\"form-two-column\"><div><label for=\"signup-name\">Name</label><input id=\"signup-name\" name=\"name\" maxlength=\"60\" autocomplete=\"name\" required placeholder=\"Your name\"></div>"
+                + "<div><label for=\"signup-username\">Username</label><input id=\"signup-username\" name=\"username\" minlength=\"3\" maxlength=\"20\" pattern=\"[A-Za-z0-9_]+\" autocomplete=\"username\" required placeholder=\"e.g. mountainhawk\"><small>3–20 letters, numbers, or underscores.</small></div></div>"
+                + "<label for=\"signup-password\">Password <span class=\"field-hint\">demo field only</span></label><input id=\"signup-password\" name=\"password\" type=\"password\" minlength=\"8\" autocomplete=\"new-password\" required placeholder=\"At least 8 characters\">"
+                + "<fieldset class=\"interest-fieldset\"><legend>Interests <span>Choose a few that sound like you</span></legend><div class=\"interest-options\">"
+                + interest("Arts & culture", "arts") + interest("Outdoors", "outdoors") + interest("Fitness", "fitness")
+                + interest("Food", "food") + interest("Music", "music") + interest("Technology", "technology")
+                + interest("Service", "service") + interest("Gaming", "gaming") + interest("Career growth", "career")
+                + "</div></fieldset><button class=\"button button-dark\" type=\"submit\">Create my profile <span aria-hidden=\"true\">↗</span></button></form></section>"
+                + "<p class=\"account-back-link\"><a href=\"/\">← Back to the hub</a></p>";
+        return HtmlLayout.page("Sign up", "", "", content);
+    }
+
+    private static String interest(String label, String value) {
+        return "<label class=\"interest-choice\"><input type=\"checkbox\" name=\"interest\" value=\""
+                + value + "\"><span>" + label + "</span></label>";
+    }
+}

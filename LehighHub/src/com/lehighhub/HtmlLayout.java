@@ -5,6 +5,12 @@ public final class HtmlLayout {
     private HtmlLayout() { }
 
     public static String page(String title, String activePage, String pageCss, String content) {
+        return page(title, activePage, pageCss, content, null);
+    }
+
+    /** Adds the shared account controls when a visitor's in-memory demo profile exists. */
+    public static String page(String title, String activePage, String pageCss, String content,
+            PageHandler.StudentProfile profile) {
         StringBuilder html = new StringBuilder();
         html.append("<!doctype html><html lang=\"en\"><head>");
         html.append("<meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
@@ -22,7 +28,23 @@ public final class HtmlLayout {
         navLink(html, "/dining", "Dining", activePage.equals("dining"));
         navLink(html, "/buses", "Buses", activePage.equals("buses"));
         navLink(html, "/resources", "Resources", activePage.equals("resources"));
-        html.append("</nav><span class=\"term-label\">STUDENT GUIDE <i></i></span></div></header>");
+        html.append("</nav><div class=\"account-actions\">");
+        if (profile == null) {
+            html.append("<a class=\"signup-link\" href=\"/signup\">Sign up <span aria-hidden=\"true\">↗</span></a>");
+        } else {
+            html.append("<a class=\"account-username\" href=\"/profile\" aria-label=\"Open profile for ")
+                    .append(escape(profile.getUsername())).append("\">")
+                    .append(escape(profile.getUsername())).append("</a>");
+        }
+        html.append("<a class=\"profile-button\" href=\"").append(profile == null ? "/signup" : "/profile")
+                .append("\" aria-label=\"").append(profile == null ? "Sign up to create your profile" : "Open your profile")
+                .append("\">");
+        if (profile != null && profile.hasProfilePicture()) {
+            html.append("<img src=\"/profile-picture\" alt=\"\">");
+        } else {
+            html.append("<span class=\"profile-icon\" aria-hidden=\"true\"><i></i></span>");
+        }
+        html.append("</a><span class=\"term-label\">STUDENT GUIDE <i></i></span></div></div></header>");
         html.append("<main id=\"main-content\" class=\"page-wrap\">").append(content).append("</main>");
         html.append("<footer class=\"site-footer\"><div><span>LEHIGH HUB</span><span>Built for the Mountain Hawk community</span></div>");
         html.append("<p>Hackathon prototype · Sample information only · Not an official university service</p></footer>");
