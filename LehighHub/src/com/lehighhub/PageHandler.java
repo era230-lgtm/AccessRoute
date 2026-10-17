@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.time.LocalTime;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -72,7 +73,7 @@ public class PageHandler implements HttpHandler {
                 return;
             }
             if ("/clubs/rsvp".equals(path)) {
-                handleClubRsvp(exchange, profile);
+                handleClubRsvp(exchange, sessionId, profile);
                 return;
             }
             if ("/signup".equals(path)) {
@@ -159,9 +160,11 @@ public class PageHandler implements HttpHandler {
         String password = fields.remove("password"); // Deliberately never stored or compared.
         String name = safeField(fields, "name");
         String username = safeField(fields, "username");
+        String graduationYear = safeField(fields, "graduationYear");
         List<String> interests = selectedInterests(fields);
 
         String problem = validateBasics(name, username);
+        if (problem.isEmpty()) problem = graduationYearProblem(graduationYear);
         if (problem.isEmpty() && (password == null || password.length() < 8)) {
             problem = "For this demo form, enter at least 8 characters in the password field.";
         }
@@ -175,7 +178,7 @@ public class PageHandler implements HttpHandler {
 
         // Issue a fresh session ID when a profile is created. The password is discarded.
         String newSessionId = UUID.randomUUID().toString();
-        StudentProfile profile = new StudentProfile(name, username, "", "", "", interests, "");
+        StudentProfile profile = new StudentProfile(name, username, "", graduationYear, "", interests, "");
         profiles.put(newSessionId, profile);
         String authorizedEmail = authorizedEmails.remove(oldSessionId);
         if (authorizedEmail != null) authorizedEmails.put(newSessionId, authorizedEmail);
@@ -227,7 +230,7 @@ public class PageHandler implements HttpHandler {
         redirect(exchange, "/clubs?posted=1");
     }
 
-    private void handleClubRsvp(HttpExchange exchange, StudentProfile profile) throws IOException {
+    private void handleClubRsvp(HttpExchange exchange, String sessionId, StudentProfile profile) throws IOException {
         if (profile == null) {
             redirect(exchange, "/signup");
             return;
@@ -243,12 +246,17 @@ public class PageHandler implements HttpHandler {
         CopyOnWriteArrayList<RsvpEntry> attendees = clubRsvps.computeIfAbsent(meetingId,
                 ignored -> new CopyOnWriteArrayList<>());
         synchronized (attendees) {
-            boolean alreadyGoing = attendees.stream()
-                    .anyMatch(attendee -> attendee.getUsername().equalsIgnoreCase(profile.getUsername()));
-            if (!alreadyGoing) {
-                attendees.add(new RsvpEntry(profile.getName(), profile.getUsername(), profile.getInterests(),
-                        profile.getResidenceHall(), profile.getGraduationYear()));
+            int attendeeIndex = -1;
+            for (int i = 0; i < attendees.size(); i++) {
+                if (attendees.get(i).getSessionId().equals(sessionId)) {
+                    attendeeIndex = i;
+                    break;
+                }
             }
+            RsvpEntry refreshedEntry = new RsvpEntry(sessionId, profile.getName(), profile.getUsername(),
+                    profile.getInterests(), profile.getResidenceHall(), profile.getGraduationYear());
+            if (attendeeIndex >= 0) attendees.set(attendeeIndex, refreshedEntry);
+            else attendees.add(refreshedEntry);
         }
         redirect(exchange, "/clubs?meeting=" + meetingId + "&rsvp=1");
     }
@@ -308,14 +316,7 @@ public class PageHandler implements HttpHandler {
         String graduationYear = safeField(fields, "graduationYear");
         String major = safeField(fields, "major");
         String problem = validateBasics(name, username);
-        if (problem.isEmpty() && !graduationYear.isEmpty()) {
-            try {
-                int year = Integer.parseInt(graduationYear);
-                if (year < 2020 || year > 2100) throw new NumberFormatException();
-            } catch (NumberFormatException exception) {
-                problem = "Enter a graduation year between 2020 and 2100.";
-            }
-        }
+        if (problem.isEmpty()) problem = graduationYearProblem(graduationYear);
         if (problem.isEmpty() && usernameTaken(username, sessionId)) {
             problem = "That username is already in use in this demo. Try another one.";
         }
@@ -324,9 +325,24 @@ public class PageHandler implements HttpHandler {
             return;
         }
 
-        profiles.put(sessionId, new StudentProfile(name, username, residenceHall, graduationYear,
-                major, selectedInterests(fields), current.getPictureFileName()));
+        StudentProfile updatedProfile = new StudentProfile(name, username, residenceHall, graduationYear,
+                major, selectedInterests(fields), current.getPictureFileName());
+        profiles.put(sessionId, updatedProfile);
+        refreshRsvpEntries(sessionId, updatedProfile);
         redirect(exchange, "/profile?saved=1");
+    }
+
+    private void refreshRsvpEntries(String sessionId, StudentProfile profile) {
+        for (CopyOnWriteArrayList<RsvpEntry> attendees : clubRsvps.values()) {
+            synchronized (attendees) {
+                for (int i = 0; i < attendees.size(); i++) {
+                    if (attendees.get(i).getSessionId().equals(sessionId)) {
+                        attendees.set(i, new RsvpEntry(sessionId, profile.getName(), profile.getUsername(),
+                                profile.getInterests(), profile.getResidenceHall(), profile.getGraduationYear()));
+                    }
+                }
+            }
+        }
     }
 
     private void handlePhotoUpload(HttpExchange exchange, String sessionId, StudentProfile profile) throws IOException {
@@ -407,6 +423,19 @@ public class PageHandler implements HttpHandler {
             return "Use a username with 3–20 letters, numbers, or underscores.";
         }
         return "";
+    }
+
+    private String graduationYearProblem(String value) {
+        int currentYear = Year.now().getValue();
+        int latestYear = currentYear + 4;
+        try {
+            int graduationYear = Integer.parseInt(value);
+            if (graduationYear >= currentYear && graduationYear <= latestYear) return "";
+        } catch (NumberFormatException ignored) {
+            // Fall through to the student eligibility reminder.
+        }
+        return "Reminder: Lehigh Hub profiles are for current students. Enter an expected graduation year from "
+                + currentYear + " through " + latestYear + ".";
     }
 
     private boolean usernameTaken(String username, String currentSessionId) {
@@ -658,14 +687,16 @@ public class PageHandler implements HttpHandler {
 
     /** A profile snapshot displayed to other students after an RSVP. */
     public static final class RsvpEntry {
+        private final String sessionId;
         private final String name;
         private final String username;
         private final List<String> interests;
         private final String residenceHall;
         private final String graduationYear;
 
-        private RsvpEntry(String name, String username, List<String> interests, String residenceHall,
+        private RsvpEntry(String sessionId, String name, String username, List<String> interests, String residenceHall,
                 String graduationYear) {
+            this.sessionId = sessionId;
             this.name = name;
             this.username = username;
             this.interests = List.copyOf(interests);
@@ -673,6 +704,7 @@ public class PageHandler implements HttpHandler {
             this.graduationYear = graduationYear;
         }
 
+        public String getSessionId() { return sessionId; }
         public String getName() { return name; }
         public String getUsername() { return username; }
         public List<String> getInterests() { return interests; }
