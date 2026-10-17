@@ -7,7 +7,7 @@ public class ResourcesPage {
     }
 
     public static String render(String message, PageHandler.StudentProfile profile) {
-        String content = "<section class=\"page-hero resources-hero\"><div><p class=\"eyebrow\">SUPPORT / STUDENT RESOURCES</p><h1>Lehigh resources,<br><em>all in one place.</em></h1><p>Find official campus services, academic support, student account tools, and newspaper access.</p></div><div class=\"resource-art\"><span class=\"resource-orbit orbit-one\"></span><span class=\"resource-orbit orbit-two\"></span><span class=\"resource-core\">+</span><b>HERE<br>TO<br>HELP</b></div></section>"
+        String content = "<section class=\"page-hero resources-hero\"><div><p class=\"eyebrow\">SUPPORT / STUDENT RESOURCES</p><h1>Lehigh resources,<br><em>all in one place.</em></h1><p>Find official campus services, academic support, student account tools, and newspaper access.</p></div></section>"
                 + HtmlLayout.notice(message)
                 + section("CENTRAL HUBS & ACADEMIC SUPPORT", "Campus essentials", "",
                     card("01", "Connect Lehigh Portal", "Open the central hub for campus applications, Google Workspace, CourseSite, and administrative dashboards.", link("Open Connect Lehigh", "https://connect.lehigh.edu/"), link("Student technology resources", "https://library.lehigh.edu/popular-resources-students"), link("Connect Lehigh help", "https://lehigh.atlassian.net/wiki/x/HU2XAQ"))

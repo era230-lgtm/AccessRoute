@@ -28,11 +28,14 @@ public class PageHandler implements HttpHandler {
     private static final Path PHOTO_FOLDER = Paths.get("data", "profile-pictures");
     private static final Set<String> ALLOWED_INTERESTS = Set.of(
             "arts", "outdoors", "fitness", "food", "music", "technology", "service", "gaming", "career");
+    private static final Set<String> SAMPLE_MEETING_IDS = Set.of(
+            "sample-makers", "sample-trails", "sample-design", "sample-garden");
 
     // This map is a tiny stand-in for user storage during this local demo only.
     private final Map<String, StudentProfile> profiles = new ConcurrentHashMap<>();
     private final Map<String, String> authorizedEmails = new ConcurrentHashMap<>();
     private final List<ClubPosting> clubPostings = new CopyOnWriteArrayList<>();
+    private final Map<String, CopyOnWriteArrayList<RsvpEntry>> clubRsvps = new ConcurrentHashMap<>();
     private static final DateTimeFormatter CLUB_TIME_LABEL = DateTimeFormatter.ofPattern("h:mm a");
 
     @Override
@@ -66,6 +69,10 @@ public class PageHandler implements HttpHandler {
         if ("POST".equalsIgnoreCase(method)) {
             if ("/clubs".equals(path)) {
                 handleClubPosting(exchange, profile);
+                return;
+            }
+            if ("/clubs/rsvp".equals(path)) {
+                handleClubRsvp(exchange, profile);
                 return;
             }
             if ("/signup".equals(path)) {
@@ -117,10 +124,12 @@ public class PageHandler implements HttpHandler {
             page = ProfilePage.render(message, profile);
         } else if ("/clubs".equals(path)) {
             removeInappropriateClubPostings();
-            String query = exchange.getRequestURI().getRawQuery();
-            boolean posted = "posted=1".equals(query);
-            message = posted ? "Your meeting was posted." : "";
-            page = ClubsPage.render(message, profile, clubPostings, false, "");
+            String posted = queryValue(exchange.getRequestURI().getRawQuery(), "posted");
+            String rsvp = queryValue(exchange.getRequestURI().getRawQuery(), "rsvp");
+            message = "1".equals(posted) ? "Your meeting was posted."
+                    : "1".equals(rsvp) ? "You’re on the RSVP list." : "";
+            page = ClubsPage.render(message, profile, clubPostings, false, "", clubRsvps,
+                    queryValue(exchange.getRequestURI().getRawQuery(), "meeting"));
         }
         else if ("/dining".equals(path)) page = DiningPage.render(message, profile);
         else if ("/buses".equals(path)) page = BusesPage.render(message, profile, fields.getOrDefault("route", "CC"));
@@ -216,6 +225,44 @@ public class PageHandler implements HttpHandler {
                     profile.getName(), profile.getUsername()));
         }
         redirect(exchange, "/clubs?posted=1");
+    }
+
+    private void handleClubRsvp(HttpExchange exchange, StudentProfile profile) throws IOException {
+        if (profile == null) {
+            redirect(exchange, "/signup");
+            return;
+        }
+        String meetingId = safeField(parseForm(exchange), "meetingId");
+        if (!SAMPLE_MEETING_IDS.contains(meetingId)
+                && clubPostings.stream().noneMatch(posting -> posting.getId().equals(meetingId))) {
+            send(exchange, 404, ClubsPage.render("That meeting is no longer available.", profile, clubPostings,
+                    false, "", clubRsvps, ""), "text/html; charset=utf-8");
+            return;
+        }
+
+        CopyOnWriteArrayList<RsvpEntry> attendees = clubRsvps.computeIfAbsent(meetingId,
+                ignored -> new CopyOnWriteArrayList<>());
+        synchronized (attendees) {
+            boolean alreadyGoing = attendees.stream()
+                    .anyMatch(attendee -> attendee.getUsername().equalsIgnoreCase(profile.getUsername()));
+            if (!alreadyGoing) {
+                attendees.add(new RsvpEntry(profile.getName(), profile.getUsername(), profile.getInterests(),
+                        profile.getResidenceHall(), profile.getGraduationYear()));
+            }
+        }
+        redirect(exchange, "/clubs?meeting=" + meetingId + "&rsvp=1");
+    }
+
+    private String queryValue(String rawQuery, String key) {
+        if (rawQuery == null || rawQuery.isEmpty()) return "";
+        for (String pair : rawQuery.split("&")) {
+            String[] parts = pair.split("=", 2);
+            String name = URLDecoder.decode(parts[0], StandardCharsets.UTF_8);
+            if (key.equals(name)) {
+                return parts.length > 1 ? URLDecoder.decode(parts[1], StandardCharsets.UTF_8) : "";
+            }
+        }
+        return "";
     }
 
     private void removeInappropriateClubPostings() {
@@ -574,6 +621,7 @@ public class PageHandler implements HttpHandler {
 
     /** A bulletin meeting kept in memory for this local demo. */
     public static final class ClubPosting {
+        private final String id = UUID.randomUUID().toString();
         private final String title;
         private final LocalTime time;
         private final String location;
@@ -595,6 +643,7 @@ public class PageHandler implements HttpHandler {
             this.posterUsername = posterUsername;
         }
 
+        public String getId() { return id; }
         public String getTitle() { return title; }
         public LocalTime getTime() { return time; }
         public String getTimeLabel() { return time.format(CLUB_TIME_LABEL); }
@@ -604,6 +653,30 @@ public class PageHandler implements HttpHandler {
         public String getType() { return type; }
         public String getPosterName() { return posterName; }
         public String getPosterUsername() { return posterUsername; }
+    }
+
+    /** A profile snapshot displayed to other students after an RSVP. */
+    public static final class RsvpEntry {
+        private final String name;
+        private final String username;
+        private final List<String> interests;
+        private final String residenceHall;
+        private final String graduationYear;
+
+        private RsvpEntry(String name, String username, List<String> interests, String residenceHall,
+                String graduationYear) {
+            this.name = name;
+            this.username = username;
+            this.interests = List.copyOf(interests);
+            this.residenceHall = residenceHall;
+            this.graduationYear = graduationYear;
+        }
+
+        public String getName() { return name; }
+        public String getUsername() { return username; }
+        public List<String> getInterests() { return interests; }
+        public String getResidenceHall() { return residenceHall; }
+        public String getGraduationYear() { return graduationYear; }
     }
 
     /** Profile data is intentionally in memory only and resets when the demo server restarts. */

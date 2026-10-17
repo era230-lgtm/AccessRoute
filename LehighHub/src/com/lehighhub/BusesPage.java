@@ -57,7 +57,7 @@ public class BusesPage {
     public static String render(String message, PageHandler.StudentProfile profile, String requestedRouteId) {
         Route selected = findRoute(requestedRouteId);
         StringBuilder content = new StringBuilder();
-        content.append("<section class=\"page-hero buses-hero\"><div><p class=\"eyebrow\">GETTING AROUND / BUS BOARD</p><h1>Rethink the ride.<br><em>Find your route.</em></h1><p>Check which routes are operating now, follow their stop order, or view stops by their supplied coordinates.</p></div><div class=\"route-doodle\"><span class=\"route-circle\">L</span><span class=\"route-path\"></span><span class=\"route-pin\">●</span><span class=\"route-label label-one\">CAMPUS</span><span class=\"route-label label-two\">CONNECTED</span></div></section>")
+        content.append("<section class=\"page-hero buses-hero\"><div><p class=\"eyebrow\">GETTING AROUND / BUS BOARD</p><h1>Rethink the ride.<br><em>Find your route.</em></h1><p>Check which routes are operating now, follow their stop order, or view stops by their supplied coordinates.</p></div></section>")
                 .append("<div class=\"sample-banner\"><span class=\"sample-dot\"></span><strong>ROUTE SCHEDULES</strong><span>Active status uses your device’s local day and time. Frequencies are not live arrival times.</span></div>")
                 .append(HtmlLayout.notice(message))
                 .append("<section class=\"bus-board\"><div class=\"board-top\"><div><p class=\"eyebrow\">PLAN YOUR RIDE</p><h2>Routes near you</h2></div><div class=\"route-controls\"><label class=\"active-filter\"><input id=\"active-only\" type=\"checkbox\" checked><span>Active routes only</span></label><label class=\"route-select\" for=\"route\">Route<select id=\"route\" name=\"route\">");
@@ -84,8 +84,8 @@ public class BusesPage {
                 .append("<div class=\"route-facts\"><span><b>Days</b> ").append(route.operatingDays).append("</span><span><b>Hours</b> ")
                 .append(route.startTime).append("–").append(route.endTime).append(route.endTime.compareTo(route.startTime) < 0 ? " next day" : "")
                 .append("</span><span><b>Frequency</b> Every ").append(route.frequencyMinutes).append(" min</span><span><b>Stops</b> ").append(route.stops.size()).append("</span></div>")
-                .append("<div class=\"stop-view-toggle\" role=\"group\" aria-label=\"Stop view\"><button type=\"button\" class=\"view-button active\" data-view=\"list\" aria-pressed=\"true\">Stop list</button><button type=\"button\" class=\"view-button\" data-view=\"map\" aria-pressed=\"false\">Map</button></div>")
-                .append("<div class=\"stop-list-view\"><ol class=\"stop-list\">");
+                .append("<div class=\"stop-view-toggle\" role=\"group\" aria-label=\"Route view\"><button type=\"button\" class=\"view-button active\" data-view=\"map\" aria-pressed=\"true\">Map</button><button type=\"button\" class=\"view-button\" data-view=\"list\" aria-pressed=\"false\">Stops</button></div>")
+                .append("<div class=\"stop-list-view\" hidden><ol class=\"stop-list\">");
         for (int i = 0; i < route.stops.size(); i++) {
             Stop stop = route.stops.get(i);
             html.append("<li class=\"stop-row\" data-stop-id=\"").append(stop.id).append("\" data-latitude=\"")
@@ -95,7 +95,7 @@ public class BusesPage {
                     .append(" · ID ").append(stop.id).append(" · ").append(HtmlLayout.escape(stop.direction)).append(stop.shelter ? " · Shelter" : " · No shelter")
                     .append("</small></div><span class=\"stop-coordinates\">").append(String.format(Locale.ROOT, "%.4f, %.4f", stop.latitude, stop.longitude)).append("</span></li>");
         }
-        html.append("</ol></div><div class=\"map-view\" hidden><p class=\"map-caption\">Drag to pan, use the controls to zoom, or select a numbered pin for stop details. The line follows stop order; it is not a live bus path.</p><div class=\"map-canvas\" id=\"map-")
+        html.append("</ol></div><div class=\"map-view\"><p class=\"map-caption\">Drag to pan, use the controls to zoom, or select a numbered pin for stop details. The line follows stop order; it is not a live bus path.</p><div class=\"map-canvas\" id=\"map-")
                 .append(route.id).append("\" role=\"region\" aria-label=\"Interactive stop map for ").append(HtmlLayout.escape(route.name))
                 .append("\"><p class=\"map-loading\">Loading map…</p></div><a class=\"google-maps-link\" href=\"")
                 .append(googleMapsArea(route)).append("\" target=\"_blank\" rel=\"noopener noreferrer\">Open this area in Google Maps <span aria-hidden=\"true\">↗</span></a><span class=\"map-link-note\">Google Maps opens separately; numbered stop pins stay on this map.</span>");
@@ -131,7 +131,13 @@ public class BusesPage {
                       option.textContent=option.textContent.replace(/ · (Active now|Not operating now)$/,'')+(operating(option,now)?' · Active now':' · Not operating now');
                     });
                     if(activeOnly.checked&&active.length&& !operating(routeSelect.selectedOptions[0],now))routeSelect.value=active[0].value;
-                    panels.forEach(panel=>panel.hidden=panel.dataset.routeId!==routeSelect.value);
+                    panels.forEach(panel=>{
+                      panel.hidden=panel.dataset.routeId!==routeSelect.value;
+                      if(!panel.hidden&&!panel.querySelector('.map-view').hidden){
+                        const mapContainer=panel.querySelector('.map-canvas');
+                        if(mapContainer.dataset.initialized!=='true')initializeMap(panel).catch(()=>{});
+                      }
+                    });
                     panels.forEach(panel=>{
                       const status=panel.querySelector('.route-status'),option=options.find(item=>item.value===panel.dataset.routeId),isActive=operating(option,now);
                       status.textContent=isActive?'Operating now':'Not operating now';status.classList.toggle('is-active',isActive);

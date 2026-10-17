@@ -44,7 +44,7 @@ public final class HtmlLayout {
         } else {
             html.append("<span class=\"profile-icon\" aria-hidden=\"true\"><i></i></span>");
         }
-        html.append("</a><span class=\"term-label\">STUDENT GUIDE <i></i></span></div></div></header>");
+        html.append("</a></div></div></header>");
         html.append("<main id=\"main-content\" class=\"page-wrap\">").append(content).append("</main>");
         html.append("<footer class=\"site-footer\"><div><span>LEHIGH HUB</span><span>Built for the Mountain Hawk community</span></div>");
         html.append("<p>Hackathon prototype · Sample information only · Not an official university service</p></footer>");

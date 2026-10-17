@@ -8,7 +8,7 @@ public class DiningPage {
 
     public static String render(String message, PageHandler.StudentProfile profile) {
         String content = """
-                <section class="page-hero dining-hero"><div><p class="eyebrow">FOOD / MEAL PLAN</p><h1>Plan your meals<br><em>with a clear pace.</em></h1><p>See how Dining Dollars, meal swipes, and weekly Meal Exchanges can work together across your plan.</p></div><div class="dining-illustration"><span class="plate plate-back"></span><span class="plate plate-front">LH</span><i class="spark spark-one">✳</i><i class="spark spark-two">✦</i></div></section>
+                <section class="page-hero dining-hero"><div><p class="eyebrow">FOOD / MEAL PLAN</p><h1>Plan your meals<br><em>with a clear pace.</em></h1><p>See how Dining Dollars, meal swipes, and weekly Meal Exchanges can work together across your plan.</p></div></section>
                 NOTICE_HERE
                 <section class="dining-layout">
                   <div class="budget-card">
