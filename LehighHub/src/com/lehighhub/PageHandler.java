@@ -4,6 +4,8 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
 
 /** Routes page requests and keeps demo profiles in server memory. */
 public class PageHandler implements HttpHandler {
@@ -28,6 +32,10 @@ public class PageHandler implements HttpHandler {
 
     // This map is a tiny stand-in for user storage during this local demo only.
     private final Map<String, StudentProfile> profiles = new ConcurrentHashMap<>();
+    private final List<ClubPosting> clubPostings = new CopyOnWriteArrayList<>();
+    private static final DateTimeFormatter CLUB_TIME_LABEL = DateTimeFormatter.ofPattern("h:mm a");
+    private static final Pattern EXPLICIT_LANGUAGE = Pattern.compile(
+            "(?iu)(?<![\\p{L}\\p{N}_])(?:fuck(?:er|ing|ed|s)?|motherfucker|shit(?:ty|ting|s)?|bitch(?:es|ing)?|asshole(?:s)?|ass|bastard(?:s)?|crap|damn|dick(?:s)?|prick(?:s)?|cunt(?:s)?|cock(?:s)?|piss(?:ed|ing)?|pussy|slut(?:s)?|whore(?:s)?)(?![\\p{L}\\p{N}_])");
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -46,6 +54,10 @@ public class PageHandler implements HttpHandler {
 
         String method = exchange.getRequestMethod();
         if ("POST".equalsIgnoreCase(method)) {
+            if ("/clubs".equals(path)) {
+                handleClubPosting(exchange, profile);
+                return;
+            }
             if ("/signup".equals(path)) {
                 handleSignup(exchange, sessionId);
                 return;
@@ -93,7 +105,12 @@ public class PageHandler implements HttpHandler {
                 message = "Your profile picture was removed.";
             }
             page = ProfilePage.render(message, profile);
-        } else if ("/clubs".equals(path)) page = ClubsPage.render(message, profile);
+        } else if ("/clubs".equals(path)) {
+            String query = exchange.getRequestURI().getRawQuery();
+            boolean posted = "posted=1".equals(query);
+            message = posted ? "Your meeting was posted." : "";
+            page = ClubsPage.render(message, profile, clubPostings, false, "");
+        }
         else if ("/dining".equals(path)) page = DiningPage.render(message, profile);
         else if ("/buses".equals(path)) page = BusesPage.render(message, profile);
         else if ("/resources".equals(path)) page = ResourcesPage.render(message, profile);
@@ -130,6 +147,69 @@ public class PageHandler implements HttpHandler {
         profiles.put(newSessionId, profile);
         exchange.getResponseHeaders().add("Set-Cookie", sessionCookie(newSessionId));
         redirect(exchange, "/profile?welcome=1");
+    }
+
+    private void handleClubPosting(HttpExchange exchange, StudentProfile profile) throws IOException {
+        Map<String, String> fields = parseForm(exchange);
+        String title = safeField(fields, "title");
+        String rawTime = safeField(fields, "time");
+        String location = safeField(fields, "location");
+        String access = safeField(fields, "access");
+        String type = safeField(fields, "type");
+        if (EXPLICIT_LANGUAGE.matcher(title + " " + location).find()) {
+            String problem = "Explicit language is not allowed in club posts.";
+            send(exchange, 400, ClubsPage.render(problem, profile, clubPostings, true, problem), "text/html; charset=utf-8");
+            return;
+        }
+        LocalTime time;
+        try {
+            time = LocalTime.parse(rawTime);
+        } catch (RuntimeException exception) {
+            send(exchange, 400, ClubsPage.render("Enter a valid meeting time.", profile, clubPostings, true, ""), "text/html; charset=utf-8");
+            return;
+        }
+        if (title.isEmpty() || title.length() > 60 || location.isEmpty() || location.length() > 80
+                || !("open".equals(access) || "closed".equals(access))
+                || !("club".equals(type) || "hangout".equals(type))) {
+            send(exchange, 400, ClubsPage.render("Enter a title, location, meeting access, and post type.", profile, clubPostings, true, ""), "text/html; charset=utf-8");
+            return;
+        }
+
+        List<String> topics = selectedClubTopics(fields);
+        synchronized (clubPostings) {
+            if (overlapsExistingClub(time, location)) {
+                send(exchange, 409, ClubsPage.render("Cannot overlap with another posting", profile, clubPostings, true, "Cannot overlap with another posting"), "text/html; charset=utf-8");
+                return;
+            }
+            clubPostings.add(new ClubPosting(title, time, location, topics, "open".equals(access), type));
+        }
+        redirect(exchange, "/clubs?posted=1");
+    }
+
+    private List<String> selectedClubTopics(Map<String, String> fields) {
+        Set<String> allowed = Set.of("arts", "outdoors", "fitness", "food", "music", "technology", "service", "gaming", "career");
+        List<String> selected = new ArrayList<>();
+        for (String topic : fields.getOrDefault("topic", "").split("\n")) {
+            String value = topic.trim();
+            if (allowed.contains(value) && !selected.contains(value)) selected.add(value);
+        }
+        return selected;
+    }
+
+    private boolean overlapsExistingClub(LocalTime time, String location) {
+        String normalizedLocation = normalizeLocation(location);
+        for (ClubPosting posting : clubPostings) {
+            if (posting.getTime().equals(time) && normalizeLocation(posting.getLocation()).equals(normalizedLocation)) return true;
+        }
+        // The four sample listings are recurring meetings already on this demo board.
+        return (time.equals(LocalTime.of(18, 30)) && normalizedLocation.equals(normalizeLocation("UC Room 202")))
+                || (time.equals(LocalTime.of(10, 0)) && normalizedLocation.equals(normalizeLocation("Alumni Building steps")))
+                || (time.equals(LocalTime.of(19, 0)) && normalizedLocation.equals(normalizeLocation("Packard Lab 112")))
+                || (time.equals(LocalTime.of(16, 30)) && normalizedLocation.equals(normalizeLocation("Community Garden")));
+    }
+
+    private String normalizeLocation(String location) {
+        return location.trim().replaceAll("\\s+", " ").toLowerCase();
     }
 
     private void handleProfileUpdate(HttpExchange exchange, String sessionId, StudentProfile current) throws IOException {
@@ -438,6 +518,33 @@ public class PageHandler implements HttpHandler {
     private static final class PhotoPart {
         private final byte[] bytes;
         private PhotoPart(byte[] bytes) { this.bytes = bytes; }
+    }
+
+    /** A bulletin meeting kept in memory for this local demo. */
+    public static final class ClubPosting {
+        private final String title;
+        private final LocalTime time;
+        private final String location;
+        private final List<String> topics;
+        private final boolean open;
+        private final String type;
+
+        private ClubPosting(String title, LocalTime time, String location, List<String> topics, boolean open, String type) {
+            this.title = title;
+            this.time = time;
+            this.location = location;
+            this.topics = List.copyOf(topics);
+            this.open = open;
+            this.type = type;
+        }
+
+        public String getTitle() { return title; }
+        public LocalTime getTime() { return time; }
+        public String getTimeLabel() { return time.format(CLUB_TIME_LABEL); }
+        public String getLocation() { return location; }
+        public List<String> getTopics() { return topics; }
+        public boolean isOpen() { return open; }
+        public String getType() { return type; }
     }
 
     /** Profile data is intentionally in memory only and resets when the demo server restarts. */
