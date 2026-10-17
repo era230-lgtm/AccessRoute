@@ -31,6 +31,7 @@ public class PageHandler implements HttpHandler {
 
     // This map is a tiny stand-in for user storage during this local demo only.
     private final Map<String, StudentProfile> profiles = new ConcurrentHashMap<>();
+    private final Map<String, String> authorizedEmails = new ConcurrentHashMap<>();
     private final List<ClubPosting> clubPostings = new CopyOnWriteArrayList<>();
     private static final DateTimeFormatter CLUB_TIME_LABEL = DateTimeFormatter.ofPattern("h:mm a");
 
@@ -48,12 +49,20 @@ public class PageHandler implements HttpHandler {
             serveLibraryImage(exchange);
             return;
         }
-        if ("/profile-picture".equals(path) && "GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+        String method = exchange.getRequestMethod();
+        if ("POST".equalsIgnoreCase(method) && "/access".equals(path)) {
+            handleAccess(exchange, sessionId);
+            return;
+        }
+        if (!authorizedEmails.containsKey(sessionId)) {
+            send(exchange, 200, AccessPage.render("", ""), "text/html; charset=utf-8");
+            return;
+        }
+        if ("/profile-picture".equals(path) && "GET".equalsIgnoreCase(method)) {
             serveProfilePicture(exchange, sessionId, profile);
             return;
         }
 
-        String method = exchange.getRequestMethod();
         if ("POST".equalsIgnoreCase(method)) {
             if ("/clubs".equals(path)) {
                 handleClubPosting(exchange, profile);
@@ -124,6 +133,18 @@ public class PageHandler implements HttpHandler {
         send(exchange, 200, page, "text/html; charset=utf-8");
     }
 
+    private void handleAccess(HttpExchange exchange, String sessionId) throws IOException {
+        String email = safeField(parseForm(exchange), "email").toLowerCase(java.util.Locale.ROOT);
+        if (!email.matches("[a-z0-9._%+-]+@lehigh\\.edu")) {
+            send(exchange, 400, AccessPage.render("Enter a valid Lehigh email ending in @lehigh.edu.", email),
+                    "text/html; charset=utf-8");
+            return;
+        }
+        // This prototype checks only the email domain; it does not verify mailbox ownership.
+        authorizedEmails.put(sessionId, email);
+        redirect(exchange, "/");
+    }
+
     private void handleSignup(HttpExchange exchange, String oldSessionId) throws IOException {
         Map<String, String> fields = parseForm(exchange);
         String password = fields.remove("password"); // Deliberately never stored or compared.
@@ -147,12 +168,19 @@ public class PageHandler implements HttpHandler {
         String newSessionId = UUID.randomUUID().toString();
         StudentProfile profile = new StudentProfile(name, username, "", "", "", interests, "");
         profiles.put(newSessionId, profile);
+        String authorizedEmail = authorizedEmails.remove(oldSessionId);
+        if (authorizedEmail != null) authorizedEmails.put(newSessionId, authorizedEmail);
         exchange.getResponseHeaders().add("Set-Cookie", sessionCookie(newSessionId));
         redirect(exchange, "/profile?welcome=1");
     }
 
     private void handleClubPosting(HttpExchange exchange, StudentProfile profile) throws IOException {
         removeInappropriateClubPostings();
+        if (profile == null) {
+            String problem = "Create a student profile before posting so meetings can show who posted them.";
+            send(exchange, 403, ClubsPage.render(problem, null, clubPostings, false, ""), "text/html; charset=utf-8");
+            return;
+        }
         Map<String, String> fields = parseForm(exchange);
         String title = safeField(fields, "title");
         String rawTime = safeField(fields, "time");
@@ -184,7 +212,8 @@ public class PageHandler implements HttpHandler {
                 send(exchange, 409, ClubsPage.render("Cannot overlap with another posting", profile, clubPostings, true, "Cannot overlap with another posting"), "text/html; charset=utf-8");
                 return;
             }
-            clubPostings.add(new ClubPosting(title, time, location, topics, "open".equals(access), type));
+            clubPostings.add(new ClubPosting(title, time, location, topics, "open".equals(access), type,
+                    profile.getName(), profile.getUsername()));
         }
         redirect(exchange, "/clubs?posted=1");
     }
@@ -490,6 +519,7 @@ public class PageHandler implements HttpHandler {
         String css;
         switch (fileName) {
             case "shared.css": css = "shared.css"; break;
+            case "access.css": css = "access.css"; break;
             case "clubs.css": css = "clubs.css"; break;
             case "dining.css": css = "dining.css"; break;
             case "buses.css": css = "buses.css"; break;
@@ -550,14 +580,19 @@ public class PageHandler implements HttpHandler {
         private final List<String> topics;
         private final boolean open;
         private final String type;
+        private final String posterName;
+        private final String posterUsername;
 
-        private ClubPosting(String title, LocalTime time, String location, List<String> topics, boolean open, String type) {
+        private ClubPosting(String title, LocalTime time, String location, List<String> topics, boolean open, String type,
+                String posterName, String posterUsername) {
             this.title = title;
             this.time = time;
             this.location = location;
             this.topics = List.copyOf(topics);
             this.open = open;
             this.type = type;
+            this.posterName = posterName;
+            this.posterUsername = posterUsername;
         }
 
         public String getTitle() { return title; }
@@ -567,6 +602,8 @@ public class PageHandler implements HttpHandler {
         public List<String> getTopics() { return topics; }
         public boolean isOpen() { return open; }
         public String getType() { return type; }
+        public String getPosterName() { return posterName; }
+        public String getPosterUsername() { return posterUsername; }
     }
 
     /** Profile data is intentionally in memory only and resets when the demo server restarts. */

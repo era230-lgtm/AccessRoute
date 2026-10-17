@@ -41,3 +41,25 @@
 .confirm-post-button span{margin-left:3px;font-size:14px}
 @keyframes post-arrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:650px){.club-toolbar-actions{align-items:end;flex-direction:column-reverse;gap:8px}.post-button{padding:10px 14px}.post-dialog-heading{padding:21px 20px 14px}.post-dialog-form{padding:16px 20px 21px}.club-filters{grid-template-columns:1fr 1fr;gap:10px}.club-filters>label:first-child{grid-column:1/-1}.filter-results{padding-bottom:2px}}
+
+/* Readable topic badges and meeting authors. */
+.post-button{text-decoration:none}
+.club-topic-list{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 12px}
+.club-topic-chip{display:inline-flex;align-items:center;min-height:23px;padding:4px 9px;border:1px solid transparent;border-radius:99px;font-size:9px;font-weight:800;letter-spacing:.045em}
+.topic-arts{background:#f4e8f1;color:#78476e;border-color:#ead4e4}
+.topic-outdoors{background:#e8f1e7;color:#456c43;border-color:#d5e6d2}
+.topic-fitness{background:#fbe9df;color:#995531;border-color:#f2d5c4}
+.topic-food{background:#fbf0d9;color:#86601f;border-color:#f1e1b8}
+.topic-music{background:#eaeafb;color:#4f51a1;border-color:#d9d9f4}
+.topic-technology{background:#e3eff5;color:#35647a;border-color:#cde1eb}
+.topic-service{background:#e6f1ed;color:#39735f;border-color:#d0e6dd}
+.topic-gaming{background:#eee8f6;color:#654b8b;border-color:#ddd1ee}
+.topic-career{background:#e8edf3;color:#4d6076;border-color:#d7e0ea}
+.topic-general{background:#f0ece6;color:#685741;border-color:#e3dbd0}
+.club-posted-by{display:flex;align-items:center;gap:9px;margin:9px 0 13px;padding-top:10px;border-top:1px solid #efede8}
+.club-avatar{display:grid;place-items:center;width:31px;height:31px;flex:none;border-radius:50%;background:#79583a;color:#fff;font-size:10px;font-weight:800;letter-spacing:.04em}
+.club-posted-by>span:last-child{display:grid;gap:1px}
+.club-posted-by small{color:#888078;font-size:8px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.club-posted-by b{color:#362312;font-size:10px;font-weight:700}
+.club-posted-by em{color:#82786d;font-size:9px;font-style:normal}
+.sample-byline{opacity:.78}

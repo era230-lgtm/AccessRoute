@@ -18,12 +18,22 @@ public class ClubsPage {
         content.append("<section class=\"page-hero clubs-hero\"><div><p class=\"eyebrow\">COMMUNITY / CLUB BULLETIN</p><h1>Find your <em>people.</em></h1><p>Meet the groups making things happen around campus. These listings are examples for the prototype.</p></div><div class=\"hero-stamp\">JOIN<br>IN<span>✳</span></div></section>")
                 .append(HtmlLayout.notice(message))
                 .append("<div class=\"page-toolbar\"><div><span class=\"eyebrow\">SAMPLE CLUBS</span><h2>Something for every side of you.</h2></div><div class=\"club-toolbar-actions\"><span class=\"count-pill\">")
-                .append(String.format("%02d", 4 + postings.size())).append(" MEETINGS</span><button class=\"post-button\" type=\"button\" data-open-post><span aria-hidden=\"true\">＋</span> Post</button></div></div>")
+                .append(String.format("%02d", 4 + postings.size())).append(" MEETINGS</span>");
+        if (profile == null) {
+            content.append("<a class=\"post-button\" href=\"/signup\"><span aria-hidden=\"true\">＋</span> Create profile to post</a>");
+        } else {
+            content.append("<button class=\"post-button\" type=\"button\" data-open-post><span aria-hidden=\"true\">＋</span> Post</button>");
+        }
+        content.append("</div></div>")
                 .append("<section class=\"club-filters\" aria-label=\"Filter club postings\"><label>Topic<select id=\"filter-topic\"><option value=\"all\">All topics</option><option value=\"arts\">Arts</option><option value=\"outdoors\">Outdoors</option><option value=\"fitness\">Fitness</option><option value=\"food\">Food</option><option value=\"music\">Music</option><option value=\"technology\">Technology</option><option value=\"service\">Service</option><option value=\"gaming\">Gaming</option><option value=\"career\">Career</option></select></label><label>Openness<select id=\"filter-access\"><option value=\"all\">Open and closed</option><option value=\"open\">Open</option><option value=\"closed\">Closed</option></select></label><label>Post type<select id=\"filter-kind\"><option value=\"all\">Clubs and hangouts</option><option value=\"club\">Club</option><option value=\"hangout\">Hangout</option></select></label><span class=\"filter-results\" id=\"filter-results\" aria-live=\"polite\"></span></section>")
-                .append("<section class=\"club-grid\" id=\"club-grid\"><article class=\"club-card\" data-topics=\"arts\" data-access=\"open\" data-kind=\"club\"><div class=\"club-card-top club-art-one\"><span>ARTS &amp; CULTURE</span><b>01</b></div><div class=\"club-card-body\"><h3>Mountain Makers</h3><p>Creative meetups, open studio nights, and low-pressure ways to try something new.</p><div class=\"club-meta\"><span>◷ Thursdays · 6:30 PM</span><span>▦ UC Room 202</span><span class=\"meeting-access open\">Open</span></div></div></article>")
-                .append("<article class=\"club-card\" data-topics=\"outdoors\" data-access=\"open\" data-kind=\"club\"><div class=\"club-card-top club-art-two\"><span>OUTDOORS</span><b>02</b></div><div class=\"club-card-body\"><h3>Lehigh Trail Collective</h3><p>Weekend walks and trail days for anyone who wants a breath of fresh air.</p><div class=\"club-meta\"><span>◷ Saturdays · 10:00 AM</span><span>▦ Alumni Building steps</span><span class=\"meeting-access open\">Open</span></div></div></article>")
-                .append("<article class=\"club-card\" data-topics=\"technology,service\" data-access=\"open\" data-kind=\"club\"><div class=\"club-card-top club-art-three\"><span>TECH &amp; DESIGN</span><b>03</b></div><div class=\"club-card-body\"><h3>Design for Good</h3><p>Students teaming up to sketch, prototype, and share ideas for community projects.</p><div class=\"club-meta\"><span>◷ Tuesdays · 7:00 PM</span><span>▦ Packard Lab 112</span><span class=\"meeting-access open\">Open</span></div></div></article>")
-                .append("<article class=\"club-card\" data-topics=\"food,outdoors\" data-access=\"open\" data-kind=\"club\"><div class=\"club-card-top club-art-four\"><span>FOOD &amp; GARDEN</span><b>04</b></div><div class=\"club-card-body\"><h3>Campus Garden Crew</h3><p>Grow, learn, and share what is in season at our friendly garden work sessions.</p><div class=\"club-meta\"><span>◷ Wednesdays · 4:30 PM</span><span>▦ Community Garden</span><span class=\"meeting-access open\">Open</span></div></div></article>");
+                .append("<section class=\"club-grid\" id=\"club-grid\"><article class=\"club-card\" data-topics=\"arts\" data-access=\"open\" data-kind=\"club\"><div class=\"club-card-top club-art-one\"><span>ARTS &amp; CULTURE</span><b>01</b></div><div class=\"club-card-body\"><h3>Mountain Makers</h3><p>Creative meetups, open studio nights, and low-pressure ways to try something new.</p>")
+                .append(topicChips(List.of("arts"))).append(sampleByline()).append("<div class=\"club-meta\"><span>◷ Thursdays · 6:30 PM</span><span>▦ UC Room 202</span><span class=\"meeting-access open\">Open</span></div></div></article>")
+                .append("<article class=\"club-card\" data-topics=\"outdoors\" data-access=\"open\" data-kind=\"club\"><div class=\"club-card-top club-art-two\"><span>OUTDOORS</span><b>02</b></div><div class=\"club-card-body\"><h3>Lehigh Trail Collective</h3><p>Weekend walks and trail days for anyone who wants a breath of fresh air.</p>")
+                .append(topicChips(List.of("outdoors"))).append(sampleByline()).append("<div class=\"club-meta\"><span>◷ Saturdays · 10:00 AM</span><span>▦ Alumni Building steps</span><span class=\"meeting-access open\">Open</span></div></div></article>")
+                .append("<article class=\"club-card\" data-topics=\"technology,service\" data-access=\"open\" data-kind=\"club\"><div class=\"club-card-top club-art-three\"><span>TECH &amp; DESIGN</span><b>03</b></div><div class=\"club-card-body\"><h3>Design for Good</h3><p>Students teaming up to sketch, prototype, and share ideas for community projects.</p>")
+                .append(topicChips(List.of("technology", "service"))).append(sampleByline()).append("<div class=\"club-meta\"><span>◷ Tuesdays · 7:00 PM</span><span>▦ Packard Lab 112</span><span class=\"meeting-access open\">Open</span></div></div></article>")
+                .append("<article class=\"club-card\" data-topics=\"food,outdoors\" data-access=\"open\" data-kind=\"club\"><div class=\"club-card-top club-art-four\"><span>FOOD &amp; GARDEN</span><b>04</b></div><div class=\"club-card-body\"><h3>Campus Garden Crew</h3><p>Grow, learn, and share what is in season at our friendly garden work sessions.</p>")
+                .append(topicChips(List.of("food", "outdoors"))).append(sampleByline()).append("<div class=\"club-meta\"><span>◷ Wednesdays · 4:30 PM</span><span>▦ Community Garden</span><span class=\"meeting-access open\">Open</span></div></div></article>");
         for (PageHandler.ClubPosting posting : postings) {
             content.append("<article class=\"club-card posted-club\" data-topics=\"")
                     .append(HtmlLayout.escape(String.join(",", posting.getTopics())))
@@ -31,9 +41,10 @@ public class ClubsPage {
                     .append("\" data-kind=\"").append(posting.getType()).append("\"><div class=\"club-card-top club-art-posted\"><span>")
                     .append(posting.getType().equals("hangout") ? "HANGOUT" : (posting.getTopics().isEmpty() ? "CLUB MEETING" : HtmlLayout.escape(posting.getTopics().get(0).toUpperCase())))
                     .append("</span><b>✳</b></div><div class=\"club-card-body\"><h3>")
-                    .append(HtmlLayout.escape(posting.getTitle())).append("</h3><p>");
-            if (!posting.getTopics().isEmpty()) content.append("Topics: ").append(HtmlLayout.escape(String.join(", ", posting.getTopics()))).append(". ");
-            content.append("</p><div class=\"club-meta\"><span>◷ ").append(HtmlLayout.escape(posting.getTimeLabel()))
+                    .append(HtmlLayout.escape(posting.getTitle())).append("</h3>")
+                    .append(topicChips(posting.getTopics()))
+                    .append(posterByline(posting.getPosterName(), posting.getPosterUsername()))
+                    .append("<div class=\"club-meta\"><span>◷ ").append(HtmlLayout.escape(posting.getTimeLabel()))
                     .append("</span><span>▦ ").append(HtmlLayout.escape(posting.getLocation())).append("</span><span class=\"meeting-access ")
                     .append(posting.isOpen() ? "open\">Open" : "closed\">Closed").append("</span><span class=\"meeting-kind\">")
                     .append(posting.getType().equals("hangout") ? "Hangout" : "Club").append("</span></div></div></article>");
@@ -48,10 +59,43 @@ public class ClubsPage {
                     .append(topic[0]).append("\"><span>").append(topic[1]).append("</span></label>");
         }
         content.append("</div></fieldset><fieldset class=\"post-access-fieldset\"><legend>Meeting access</legend><div class=\"post-access-options\"><label><input type=\"radio\" name=\"access\" value=\"open\" checked><span>Open</span></label><label><input type=\"radio\" name=\"access\" value=\"closed\"><span>Closed</span></label></div></fieldset><fieldset class=\"post-access-fieldset\"><legend>Post type</legend><div class=\"post-access-options\"><label><input type=\"radio\" name=\"type\" value=\"club\" checked><span>Club</span></label><label><input type=\"radio\" name=\"type\" value=\"hangout\"><span>Hangout</span></label></div></fieldset><button class=\"button button-dark confirm-post-button\" type=\"submit\">Confirm posting <span aria-hidden=\"true\">↗</span></button></form></dialog>")
-                .append("<script>(function(){const dialog=document.getElementById('post-dialog');document.querySelector('[data-open-post]').addEventListener('click',()=>dialog.showModal());document.querySelector('[data-close-post]').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});const topic=document.getElementById('filter-topic'),access=document.getElementById('filter-access'),kind=document.getElementById('filter-kind'),cards=Array.from(document.querySelectorAll('.club-card')),results=document.getElementById('filter-results');function filterCards(){let visible=0;cards.forEach(card=>{const topics=(card.dataset.topics||'').split(',');const show=(topic.value==='all'||topics.includes(topic.value))&&(access.value==='all'||card.dataset.access===access.value)&&(kind.value==='all'||card.dataset.kind===kind.value);card.hidden=!show;if(show)visible++;});results.textContent=visible+' '+(visible===1?'meeting':'meetings');} [topic,access,kind].forEach(filter=>filter.addEventListener('change',filterCards));filterCards();");
+                .append("<script>(function(){const dialog=document.getElementById('post-dialog'),openButton=document.querySelector('[data-open-post]');if(openButton)openButton.addEventListener('click',()=>dialog.showModal());document.querySelector('[data-close-post]').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});const topic=document.getElementById('filter-topic'),access=document.getElementById('filter-access'),kind=document.getElementById('filter-kind'),cards=Array.from(document.querySelectorAll('.club-card')),results=document.getElementById('filter-results');function filterCards(){let visible=0;cards.forEach(card=>{const topics=(card.dataset.topics||'').split(',');const show=(topic.value==='all'||topics.includes(topic.value))&&(access.value==='all'||card.dataset.access===access.value)&&(kind.value==='all'||card.dataset.kind===kind.value);card.hidden=!show;if(show)visible++;});results.textContent=visible+' '+(visible===1?'meeting':'meetings');} [topic,access,kind].forEach(filter=>filter.addEventListener('change',filterCards));filterCards();");
         if (reopenDialog) content.append("dialog.showModal();");
         if (!popupError.isEmpty()) content.append("window.alert('").append(popupError).append("');");
         content.append("})();</script>");
         return HtmlLayout.page("Club bulletin", "clubs", "clubs.css", content.toString(), profile);
+    }
+
+    private static String topicChips(List<String> topics) {
+        StringBuilder chips = new StringBuilder("<div class=\"club-topic-list\" aria-label=\"Meeting topics\">");
+        if (topics.isEmpty()) {
+            chips.append("<span class=\"club-topic-chip topic-general\">General</span>");
+        } else {
+            for (String topic : topics) {
+                String label = topic.substring(0, 1).toUpperCase() + topic.substring(1);
+                chips.append("<span class=\"club-topic-chip topic-").append(HtmlLayout.escape(topic)).append("\">")
+                        .append(HtmlLayout.escape(label)).append("</span>");
+            }
+        }
+        return chips.append("</div>").toString();
+    }
+
+    private static String sampleByline() {
+        return "<div class=\"club-posted-by sample-byline\"><span class=\"club-avatar\" aria-hidden=\"true\">LH</span><span><small>Sample listing</small><b>Lehigh Hub</b></span></div>";
+    }
+
+    private static String posterByline(String name, String username) {
+        return "<div class=\"club-posted-by\"><span class=\"club-avatar\" aria-hidden=\"true\">" + HtmlLayout.escape(initials(name))
+                + "</span><span><small>Posted by</small><b>" + HtmlLayout.escape(name) + "</b><em>@"
+                + HtmlLayout.escape(username) + "</em></span></div>";
+    }
+
+    private static String initials(String name) {
+        String[] parts = name.trim().split("\\s+");
+        StringBuilder initials = new StringBuilder();
+        for (String part : parts) {
+            if (!part.isEmpty() && initials.length() < 2) initials.append(Character.toUpperCase(part.charAt(0)));
+        }
+        return initials.length() == 0 ? "?" : initials.toString();
     }
 }
