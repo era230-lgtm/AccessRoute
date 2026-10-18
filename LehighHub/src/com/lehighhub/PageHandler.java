@@ -422,6 +422,9 @@ public class PageHandler implements HttpHandler {
         if (!username.matches("[A-Za-z0-9_]{3,20}")) {
             return "Use a username with 3–20 letters, numbers, or underscores.";
         }
+        if (ClubPostModeration.containsBlockedLanguage(username)) {
+            return "Usernames cannot contain profanity, slurs, or sexual terms.";
+        }
         return "";
     }
 
@@ -575,7 +578,7 @@ public class PageHandler implements HttpHandler {
         String content = "<section class=\"home-hero\"><div class=\"hero-copy\"><p class=\"eyebrow\">YOUR CAMPUS, CONNECTED</p>"
                 + "<h1>Make the most<br>of <em>Lehigh.</em></h1><p class=\"hero-intro\">A friendly starting point for finding your people, planning your day, and making campus life a little easier.</p>"
                 + "<a class=\"button button-light\" href=\"/clubs\">Explore the hub <span aria-hidden=\"true\">↗</span></a></div>"
-                + "<div class=\"hero-art\"><img class=\"hero-library-image\" src=\"/images/linderman.jpeg\" alt=\"Interior of Linderman Library, with balconies and bookshelves\"><span class=\"hero-caption\">LINDEMAN LIBRARY · LEHIGH UNIVERSITY</span></div></section>"
+                + "<div class=\"hero-art\"><img class=\"hero-library-image\" src=\"/images/linderman.jpeg\" alt=\"Interior of Linderman Library, with balconies and bookshelves\"><span class=\"hero-caption\">LINDERMAN LIBRARY · LEHIGH UNIVERSITY</span></div></section>"
                 + "<div class=\"sample-banner\"><span class=\"sample-dot\"></span><strong>DEMO MODE</strong><span>Everything below uses clearly labeled sample information.</span></div>"
                 + "<section class=\"section-heading\"><div><p class=\"eyebrow\">A FEW GOOD SHORTCUTS</p><h2>Campus life, in one place.</h2></div><p>Built by students, for the everyday stuff.</p></section>"
                 + "<section class=\"feature-grid\"><a class=\"feature-card feature-clubs\" href=\"/clubs\"><span class=\"feature-number\">01 / COMMUNITY</span><span class=\"feature-icon\">✳</span><h3>Find your people</h3><p>Browse a sample club board and draft a bulletin post.</p><span class=\"card-arrow\">↗</span></a>"

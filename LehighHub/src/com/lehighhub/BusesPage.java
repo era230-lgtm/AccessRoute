@@ -28,23 +28,23 @@ public class BusesPage {
             withDirection(GOODMAN, "Loop"), withDirection(SAUCON, "Loop"));
     private static final List<Route> ROUTES = List.of(
             new Route("R01", "Campus Connector", "CC", "Mon-Fri", "07:30", "00:00", 30,
-                    "Continuous loop between all four major campuses and Saucon Village.", CONNECTOR_STOPS),
+                    "Continuous loop between all four major campuses and Saucon Village.", CONNECTOR_STOPS, 5, 5, 5, 5, 5, 5, 5),
             new Route("R02", "Campus Connector Weekend", "CC", "Sat-Sun", "10:00", "00:00", 30,
-                    "Weekend loop serving all campuses and Saucon Village.", CONNECTOR_STOPS),
+                    "Weekend loop serving all campuses and Saucon Village.", CONNECTOR_STOPS, 5, 5, 5, 5, 5, 5, 5),
             new Route("R03", "Mountaintop Connector", "MC", "Mon-Fri", "06:45", "20:15", 15,
                     "High-frequency link between Asa Packer and Mountaintop campus.", List.of(
                             withDirection(LOOP_STOPS.get(0), "Northbound"), withDirection(LOOP_STOPS.get(1), "Northbound"),
                             withDirection(LOOP_STOPS.get(2), "Northbound"), withDirection(LOOP_STOPS.get(3), "Northbound"), JORDAN,
-                            BUILDING_C, IACOCCA_SB, ATLSS)),
+                            BUILDING_C, IACOCCA_SB, ATLSS), 5, 5, 5, 5, 5, 5, 5),
             new Route("R04", "Goodman Connector", "GC", "Mon-Fri", "06:50", "20:20", 30,
                     "Connects Asa Packer and Goodman campus athletic facilities.", List.of(
                             withDirection(GOODMAN, "Northbound"), withDirection(CUNDEY, "Northbound"),
                             withDirection(LOOP_STOPS.get(0), "Northbound"), withDirection(LOOP_STOPS.get(4), "Southbound"),
-                            withDirection(LOOP_STOPS.get(5), "Southbound"), withDirection(LOOP_STOPS.get(6), "Southbound"))),
+                            withDirection(LOOP_STOPS.get(5), "Southbound"), withDirection(LOOP_STOPS.get(6), "Southbound")), 5, 5, 5, 5, 5),
             new Route("R05", "Packer Express", "PE", "Mon-Fri", "06:30", "02:20", 10,
-                    "Exclusively serves the academic and housing loops on Asa Packer campus.", LOOP_STOPS),
+                    "Exclusively serves the academic and housing loops on Asa Packer campus.", LOOP_STOPS, 5, 5, 5, 5, 5, 5),
             new Route("R06", "Packer Express Weekend", "PE", "Sat-Sun", "10:00", "02:20", 15,
-                    "Weekend academic and housing loop on Asa Packer campus.", LOOP_STOPS));
+                    "Weekend academic and housing loop on Asa Packer campus.", LOOP_STOPS, 5, 5, 5, 5, 5, 5));
 
     public static String render(String message) {
         return render(message, null, "R01");
@@ -58,7 +58,7 @@ public class BusesPage {
         Route selected = findRoute(requestedRouteId);
         StringBuilder content = new StringBuilder();
         content.append("<section class=\"page-hero buses-hero\"><div><p class=\"eyebrow\">GETTING AROUND / BUS BOARD</p><h1>Rethink the ride.<br><em>Find your route.</em></h1><p>Check which routes are operating now, follow their stop order, or view stops by their supplied coordinates.</p></div></section>")
-                .append("<div class=\"sample-banner\"><span class=\"sample-dot\"></span><strong>ROUTE SCHEDULES</strong><span>Active status uses your device’s local day and time. Frequencies are not live arrival times.</span></div>")
+                .append("<div class=\"sample-banner\"><span class=\"sample-dot\"></span><strong>ROUTE SCHEDULES</strong><span>Active status and next-bus estimates use your device’s local day and time.</span></div>")
                 .append(HtmlLayout.notice(message))
                 .append("<section class=\"bus-board\"><div class=\"board-top\"><div><p class=\"eyebrow\">PLAN YOUR RIDE</p><h2>Routes near you</h2></div><div class=\"route-controls\"><label class=\"active-filter\"><input id=\"active-only\" type=\"checkbox\" checked><span>Active routes only</span></label><label class=\"route-select\" for=\"route\">Route<select id=\"route\" name=\"route\">");
         for (Route route : ROUTES) {
@@ -69,7 +69,7 @@ public class BusesPage {
         }
         content.append("</select></label></div></div><p class=\"active-summary\" id=\"active-summary\" aria-live=\"polite\">Checking local route schedules…</p><div class=\"route-panels\">");
         for (Route route : ROUTES) content.append(routePanel(route, selected));
-        content.append("</div><p class=\"schedule-note\">Route availability and frequency are based on the supplied schedule. Exact arrival times and live vehicle locations are not included.</p></section>")
+        content.append("</div><p class=\"schedule-note\">Stop-to-stop travel estimates and bus frequency are listed separately. Next-bus times use the schedule and local device time; actual traffic and live vehicle locations are not included.</p></section>")
                 .append("<section class=\"bus-tip\"><span>↗</span><p><strong>Plan a little breathing room.</strong> A base frequency does not guarantee an arrival time. Confirm current transportation updates before heading out.</p></section>")
                 .append(scheduleScript());
         return HtmlLayout.page("Bus routes", "buses", "buses.css", content.toString(), profile);
@@ -81,9 +81,11 @@ public class BusesPage {
                 .append(route.id.equals(selected.id) ? "" : " hidden").append("><div class=\"bus-route-name\"><span class=\"route-badge\">")
                 .append(route.code).append("</span><div><h3>").append(HtmlLayout.escape(route.name)).append("</h3><p>")
                 .append(HtmlLayout.escape(route.description)).append("</p></div><span class=\"route-status\" data-status-for=\"").append(route.id).append("\">Checking…</span></div>")
-                .append("<div class=\"route-facts\"><span><b>Days</b> ").append(route.operatingDays).append("</span><span><b>Hours</b> ")
+                .append("<div class=\"route-facts\" data-frequency=\"").append(route.frequencyMinutes).append("\"><span><b>Days</b> ").append(route.operatingDays).append("</span><span><b>Hours</b> ")
                 .append(route.startTime).append("–").append(route.endTime).append(route.endTime.compareTo(route.startTime) < 0 ? " next day" : "")
                 .append("</span><span><b>Frequency</b> Every ").append(route.frequencyMinutes).append(" min</span><span><b>Stops</b> ").append(route.stops.size()).append("</span></div>")
+                .append(estimatedTimetable(route))
+                .append(nextBusChecker(route))
                 .append("<div class=\"stop-view-toggle\" role=\"group\" aria-label=\"Route view\"><button type=\"button\" class=\"view-button active\" data-view=\"map\" aria-pressed=\"true\">Map</button><button type=\"button\" class=\"view-button\" data-view=\"list\" aria-pressed=\"false\">Stops</button></div>")
                 .append("<div class=\"stop-list-view\" hidden><ol class=\"stop-list\">");
         for (int i = 0; i < route.stops.size(); i++) {
@@ -101,6 +103,56 @@ public class BusesPage {
                 .append(googleMapsArea(route)).append("\" target=\"_blank\" rel=\"noopener noreferrer\">Open this area in Google Maps <span aria-hidden=\"true\">↗</span></a><span class=\"map-link-note\">Google Maps opens separately; numbered stop pins stay on this map.</span>");
         return html.append("</div><div class=\"board-foot\"><span>Every ").append(route.frequencyMinutes)
                 .append(" minutes during scheduled hours</span><span>See the route’s current operating status above <b>✳</b></span></div></article>").toString();
+    }
+
+    private static String estimatedTimetable(Route route) {
+        int start = clockMinutes(route.startTime);
+        int end = clockMinutes(route.endTime);
+        if (end <= start) end += 24 * 60;
+        int finalStopOffset = route.totalTravelMinutes();
+        int lastDeparture = end - finalStopOffset;
+        StringBuilder html = new StringBuilder("<section class=\"estimated-timetable\"><div class=\"timetable-heading\"><div><p class=\"eyebrow\">STOP-BY-STOP SCHEDULE</p><h4>Estimated timetable</h4></div><span>ESTIMATES</span></div><p class=\"timetable-operation-status\" data-timetable-status-for=\"")
+                .append(route.id).append("\" aria-live=\"polite\">Checking operating status…</p><p>First run begins at ")
+                .append(formatClock(start)).append(". Buses depart the first stop every ").append(route.frequencyMinutes)
+                .append(" minutes; stop-to-stop travel times are estimated separately for each segment.</p><div class=\"timetable-scroll\"><table><thead><tr><th scope=\"col\">Stop</th><th scope=\"col\">Travel from previous stop</th><th scope=\"col\">First arrival</th><th scope=\"col\">Last arrival</th><th scope=\"col\">Repeat</th></tr></thead><tbody>");
+        int offset = 0;
+        for (int i = 0; i < route.stops.size(); i++) {
+            Stop stop = route.stops.get(i);
+            int segmentMinutes = i == 0 ? 0 : route.travelMinutesBetweenStops.get(i - 1);
+            if (i > 0) offset += segmentMinutes;
+            html.append("<tr><th scope=\"row\">").append(HtmlLayout.escape(stop.name)).append("</th><td>")
+                    .append(i == 0 ? "Route start" : segmentMinutes + " min")
+                    .append("</td><td>").append(formatClock(start + offset)).append("</td><td>").append(formatClock(lastDeparture + offset))
+                    .append("</td><td>Every ").append(route.frequencyMinutes).append(" min</td></tr>");
+        }
+        return html.append("</tbody></table></div></section>").toString();
+    }
+
+    private static String nextBusChecker(Route route) {
+        StringBuilder html = new StringBuilder("<section class=\"next-bus-checker\"><div><h4>Next bus at a stop</h4><p>Select a stop to see its next scheduled arrival.</p></div><label for=\"next-stop-")
+                .append(route.id).append("\">Stop<select id=\"next-stop-").append(route.id).append("\" class=\"next-stop-select\">");
+        int offset = 0;
+        for (int i = 0; i < route.stops.size(); i++) {
+            if (i > 0) offset += route.travelMinutesBetweenStops.get(i - 1);
+            Stop stop = route.stops.get(i);
+            html.append("<option value=\"").append(i).append("\" data-offset=\"").append(offset).append("\">")
+                    .append(HtmlLayout.escape(stop.name)).append("</option>");
+        }
+        return html.append("</select></label><p class=\"next-bus-result\" aria-live=\"polite\">Calculating next bus…</p></section>").toString();
+    }
+
+    private static int clockMinutes(String time) {
+        String[] parts = time.split(":");
+        return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
+    }
+
+    private static String formatClock(int minutes) {
+        int day = minutes / (24 * 60);
+        int withinDay = minutes % (24 * 60);
+        int hour = withinDay / 60;
+        int minute = withinDay % 60;
+        String label = (hour % 12 == 0 ? 12 : hour % 12) + String.format(Locale.ROOT, ":%02d %s", minute, hour < 12 ? "AM" : "PM");
+        return day > 0 ? label + " (+" + day + " day)" : label;
     }
 
     private static String scheduleScript() {
@@ -123,6 +175,32 @@ public class BusesPage {
                     }
                     return dayMatches(option.dataset.days,day)&&minute>=start&&minute<end;
                   }
+                  function nextArrival(option,stopOffset,now){
+                    const start=minutes(option.dataset.start),rawEnd=minutes(option.dataset.end),end=rawEnd<=start?rawEnd+1440:rawEnd;
+                    const panel=panels.find(item=>item.dataset.routeId===option.value),stopSelect=panel.querySelector('.next-stop-select');
+                    const finalOffset=Number(stopSelect.options[stopSelect.options.length-1].dataset.offset);
+                    const latestDeparture=end-finalOffset;
+                    const serviceDate=new Date(now);serviceDate.setHours(0,0,0,0);
+                    for(let dayOffset=-1;dayOffset<=8;dayOffset++){
+                      const date=new Date(serviceDate);date.setDate(date.getDate()+dayOffset);
+                      if(!dayMatches(option.dataset.days,date.getDay()))continue;
+                      for(let departure=start;departure<=latestDeparture;departure+=Number(panel.querySelector('.route-facts').dataset.frequency)){
+                        const runDeparture=new Date(date);runDeparture.setMinutes(departure);
+                        const arrival=new Date(runDeparture.getTime()+stopOffset*60000);
+                        if(arrival>=now)return arrival;
+                      }
+                    }
+                    return null;
+                  }
+                  function updateNextBus(now){
+                    const panel=panels.find(item=>item.dataset.routeId===routeSelect.value);
+                    const select=panel.querySelector('.next-stop-select'),option=routeSelect.selectedOptions[0],stop=select.selectedOptions[0];
+                    const result=panel.querySelector('.next-bus-result'),arrival=nextArrival(option,Number(stop.dataset.offset),now);
+                    if(!arrival){result.textContent='No scheduled arrival found in the next 8 days.';return;}
+                    const minutesAway=Math.max(0,Math.ceil((arrival-now)/60000));
+                    const time=arrival.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+                    result.textContent=minutesAway===0?'Arriving now · '+time: 'Next bus at '+time+' · in '+minutesAway+' min';
+                  }
                   function update(){
                     const now=new Date(),options=[...routeSelect.options];
                     const active=options.filter(option=>operating(option,now));
@@ -141,9 +219,13 @@ public class BusesPage {
                     panels.forEach(panel=>{
                       const status=panel.querySelector('.route-status'),option=options.find(item=>item.value===panel.dataset.routeId),isActive=operating(option,now);
                       status.textContent=isActive?'Operating now':'Not operating now';status.classList.toggle('is-active',isActive);
+                      const timetableStatus=panel.querySelector('.timetable-operation-status');
+                      timetableStatus.textContent=isActive?'RUNNING NOW · Scheduled service is operating':'NOT RUNNING NOW · This line is outside its scheduled operating hours';
+                      timetableStatus.classList.toggle('is-active',isActive);
                     });
                     const localTime=now.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
                     activeSummary.textContent=active.length?active.length+' route'+(active.length===1?'':'s')+' operating now · '+localTime+' local time.': 'No routes are operating now · '+localTime+' local time. Turn off “Active routes only” to browse all schedules.';
+                    updateNextBus(now);
                   }
                   function loadLeaflet(){
                     if(window.L)return Promise.resolve();
@@ -191,6 +273,7 @@ public class BusesPage {
                   routeSelect.addEventListener('change',update);
                   activeOnly.addEventListener('change',update);
                   document.querySelectorAll('.route-panel').forEach(panel=>{
+                    panel.querySelector('.next-stop-select').addEventListener('change',()=>updateNextBus(new Date()));
                     panel.querySelectorAll('.view-button').forEach(button=>button.addEventListener('click',()=>{
                       const map=button.dataset.view==='map';
                       panel.querySelector('.stop-list-view').hidden=map;
@@ -199,7 +282,7 @@ public class BusesPage {
                       if(map)initializeMap(panel).catch(()=>{});
                     }));
                   });
-                  update();setInterval(update,60000);
+                  update();setInterval(update,30000);
                 })();
                 </script>
                 """;
@@ -253,9 +336,13 @@ public class BusesPage {
         private final int frequencyMinutes;
         private final String description;
         private final List<Stop> stops;
+        private final List<Integer> travelMinutesBetweenStops;
 
         private Route(String id, String name, String code, String operatingDays, String startTime, String endTime,
-                      int frequencyMinutes, String description, List<Stop> stops) {
+                      int frequencyMinutes, String description, List<Stop> stops, int... travelMinutesBetweenStops) {
+            if (travelMinutesBetweenStops.length != stops.size() - 1) {
+                throw new IllegalArgumentException("Each route segment needs one travel-time estimate.");
+            }
             this.id = id;
             this.name = name;
             this.code = code;
@@ -265,6 +352,11 @@ public class BusesPage {
             this.frequencyMinutes = frequencyMinutes;
             this.description = description;
             this.stops = stops;
+            this.travelMinutesBetweenStops = java.util.Arrays.stream(travelMinutesBetweenStops).boxed().toList();
+        }
+
+        private int totalTravelMinutes() {
+            return travelMinutesBetweenStops.stream().mapToInt(Integer::intValue).sum();
         }
     }
 

@@ -12,7 +12,7 @@ final class ClubPostModeration {
             "fuck", "fucker", "fuckers", "fucking", "fucked", "fucks", "motherfuck", "motherfucker", "motherfuckers", "motherfucking",
             "shit", "shits", "shitty", "shitting", "bullshit", "horseshit", "batshit", "shithead", "shitshow", "shithole",
             "bitch", "bitches", "bitching", "bitchy", "asshole", "assholes", "asshat", "asswipe", "jackass", "jackasses",
-            "bastard", "bastards", "crap", "damn", "dick", "dicks", "dickhead", "dickheads", "prick", "pricks",
+            "bastard", "bastards", "crap", "crappy", "damn", "dick", "dicks", "dickhead", "dickheads", "prick", "pricks",
             "cunt", "cunts", "cock", "cocks", "piss", "pissed", "pissing", "pussy", "pussies", "slut", "sluts",
             "whore", "whores", "twat", "twats", "wanker", "wankers", "arsehole", "arseholes", "bollocks", "bugger",
             "nigger", "niggers", "nigga", "niggas", "chink", "chinks", "gook", "gooks", "spic", "spics", "wetback",
