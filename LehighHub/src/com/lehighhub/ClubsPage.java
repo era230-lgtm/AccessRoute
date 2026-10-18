@@ -25,9 +25,9 @@ public class ClubsPage {
             List<PageHandler.ClubPosting> postings, boolean reopenPostDialog, String popupError,
             Map<String, ? extends List<PageHandler.RsvpEntry>> rsvps, String meetingToOpen) {
         StringBuilder content = new StringBuilder();
-        content.append("<section class=\"page-hero clubs-hero\"><div><p class=\"eyebrow\">COMMUNITY / CLUB BULLETIN</p><h1>Find your <em>people.</em></h1><p>Meet the groups making things happen around campus. These listings are examples for the prototype.</p></div></section>")
+        content.append("<section class=\"page-hero clubs-hero\"><div><p class=\"eyebrow\">COMMUNITY / CLUB BULLETIN</p><h1>Clubs and meetups</h1><p>Browse sample clubs or post a meetup.</p></div></section>")
                 .append(HtmlLayout.notice(message))
-                .append("<div class=\"page-toolbar\"><div><span class=\"eyebrow\">SAMPLE CLUBS</span><h2>Something for every side of you.</h2></div><div class=\"club-toolbar-actions\"><span class=\"count-pill\">")
+                .append("<div class=\"page-toolbar\"><div><h2>Club Meetings</h2></div><div class=\"club-toolbar-actions\"><span class=\"count-pill\">")
                 .append(String.format("%02d", 4 + postings.size())).append(" MEETINGS</span>");
         if (profile == null) {
             content.append("<a class=\"post-button\" href=\"/signup\"><span aria-hidden=\"true\">＋</span> Create profile to post</a>");
@@ -38,24 +38,24 @@ public class ClubsPage {
                 .append("<section class=\"club-filters\" aria-label=\"Filter club postings\"><label>Topic<select id=\"filter-topic\"><option value=\"all\">All topics</option><option value=\"arts\">Arts</option><option value=\"outdoors\">Outdoors</option><option value=\"fitness\">Fitness</option><option value=\"food\">Food</option><option value=\"music\">Music</option><option value=\"technology\">Technology</option><option value=\"service\">Service</option><option value=\"gaming\">Gaming</option><option value=\"career\">Career</option></select></label><label>Openness<select id=\"filter-access\"><option value=\"all\">Open and closed</option><option value=\"open\">Open</option><option value=\"closed\">Closed</option></select></label><label>Post type<select id=\"filter-kind\"><option value=\"all\">Clubs and hangouts</option><option value=\"club\">Club</option><option value=\"hangout\">Hangout</option></select></label><span class=\"filter-results\" id=\"filter-results\" aria-live=\"polite\"></span></section>")
                 .append("<section class=\"club-grid\" id=\"club-grid\">");
 
-        appendMeetingCard(content, "sample-makers", "arts", "open", "club", "ARTS &amp; CULTURE", "01",
-                "Mountain Makers", "Creative meetups, open studio nights, and low-pressure ways to try something new.",
+        appendMeetingCard(content, "sample-makers", "arts", "open", "club", "ARTS &amp; CULTURE",
+                "Mountain Makers", "Open studio nights and creative meetups.",
                 "Thursdays · 6:30 PM", "UC Room 202", "LU Link sample", "", List.of("arts"), "club-art-one");
-        appendMeetingCard(content, "sample-trails", "outdoors", "open", "club", "OUTDOORS", "02",
-                "Lehigh Trail Collective", "Weekend walks and trail days for anyone who wants a breath of fresh air.",
+        appendMeetingCard(content, "sample-trails", "outdoors", "open", "club", "OUTDOORS",
+                "Lehigh Trail Collective", "Weekend walks and trail meetups.",
                 "Saturdays · 10:00 AM", "Alumni Building steps", "LU Link sample", "", List.of("outdoors"), "club-art-two");
-        appendMeetingCard(content, "sample-design", "technology,service", "open", "club", "TECH &amp; DESIGN", "03",
-                "Design for Good", "Students teaming up to sketch, prototype, and share ideas for community projects.",
+        appendMeetingCard(content, "sample-design", "technology,service", "open", "club", "TECH &amp; DESIGN",
+                "Design for Good", "Design and technology projects for local organizations.",
                 "Tuesdays · 7:00 PM", "Packard Lab 112", "LU Link sample", "", List.of("technology", "service"), "club-art-three");
-        appendMeetingCard(content, "sample-garden", "food,outdoors", "open", "club", "FOOD &amp; GARDEN", "04",
-                "Campus Garden Crew", "Grow, learn, and share what is in season at our friendly garden work sessions.",
+        appendMeetingCard(content, "sample-garden", "food,outdoors", "open", "club", "FOOD &amp; GARDEN",
+                "Campus Garden Crew", "Garden work sessions at the community garden.",
                 "Wednesdays · 4:30 PM", "Community Garden", "LU Link sample", "", List.of("food", "outdoors"), "club-art-four");
 
         for (PageHandler.ClubPosting posting : postings) {
             String label = posting.getType().equals("hangout") ? "HANGOUT"
                     : posting.getTopics().isEmpty() ? "CLUB MEETING" : posting.getTopics().get(0).toUpperCase();
             appendMeetingCard(content, posting.getId(), String.join(",", posting.getTopics()),
-                    posting.isOpen() ? "open" : "closed", posting.getType(), label, "✳", posting.getTitle(),
+                    posting.isOpen() ? "open" : "closed", posting.getType(), label, posting.getTitle(),
                     "Community meeting posted to LU Link.", posting.getTimeLabel(), posting.getLocation(),
                     posting.getPosterName(), posting.getPosterUsername(), posting.getTopics(), "club-art-posted");
         }
@@ -79,7 +79,7 @@ public class ClubsPage {
     }
 
     private static void appendMeetingCard(StringBuilder content, String id, String topics, String access,
-            String kind, String header, String number, String title, String description, String time,
+            String kind, String header, String title, String description, String time,
             String location, String poster, String username, List<String> topicList, String artwork) {
         content.append("<article class=\"club-card meeting-card\" role=\"button\" tabindex=\"0\" aria-label=\"View meeting details for ")
                 .append(HtmlLayout.escape(title)).append("\" data-meeting-id=\"").append(HtmlLayout.escape(id))
@@ -89,8 +89,8 @@ public class ClubsPage {
                 .append(HtmlLayout.escape(username)).append("\" data-topics=\"").append(HtmlLayout.escape(topics))
                 .append("\" data-access=\"").append(HtmlLayout.escape(access)).append("\" data-kind=\"")
                 .append(HtmlLayout.escape(kind)).append("\"><div class=\"club-card-top ").append(artwork)
-                .append("\"><span>").append(header).append("</span><b>").append(number)
-                .append("</b></div><div class=\"club-card-body\"><h3>").append(HtmlLayout.escape(title))
+                .append("\"><span>").append(header)
+                .append("</span></div><div class=\"club-card-body\"><h3>").append(HtmlLayout.escape(title))
                 .append("</h3><p>").append(HtmlLayout.escape(description)).append("</p>")
                 .append(topicChips(topicList));
         if ("LU Link sample".equals(poster)) content.append(sampleByline());
@@ -178,8 +178,8 @@ public class ClubsPage {
 
     private static String posterByline(String name, String username) {
         return "<div class=\"club-posted-by\"><span class=\"club-avatar\" aria-hidden=\"true\">" + HtmlLayout.escape(initials(name))
-                + "</span><span><small>Posted by</small><b>" + HtmlLayout.escape(name) + "</b><em>@"
-                + HtmlLayout.escape(username) + "</em></span></div>";
+                + "</span><span><small>Posted by</small><b>" + HtmlLayout.escape(name) + "</b><span class=\"poster-username\">@"
+                + HtmlLayout.escape(username) + "</span></span></div>";
     }
 
     private static String initials(String name) {

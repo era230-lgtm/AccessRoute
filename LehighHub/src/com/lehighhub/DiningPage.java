@@ -8,11 +8,11 @@ public class DiningPage {
 
     public static String render(String message, PageHandler.StudentProfile profile) {
         String content = """
-                <section class="page-hero dining-hero"><div><p class="eyebrow">FOOD / MEAL PLAN</p><h1>Plan your meals<br><em>with a clear pace.</em></h1><p>See how Dining Dollars, meal swipes, and weekly Meal Exchanges can work together across your plan.</p></div></section>
+                <section class="page-hero dining-hero"><div><p class="eyebrow">FOOD / MEAL PLAN</p><h1>Dining Dollar planner</h1><p>Estimate daily Dining Dollar, meal swipe, and Meal Exchange use.</p></div></section>
                 NOTICE_HERE
                 <section class="dining-layout">
                   <div class="budget-card">
-                    <div class="card-heading"><span class="step-number">01</span><div><p class="eyebrow">YOUR PLAN</p><h2>Meal plan balances</h2></div></div>
+                    <div class="card-heading"><div><p class="eyebrow">YOUR PLAN</p><h2>Meal plan balances</h2></div></div>
                     <p class="card-copy">Add your current balances and the dates you are planning for. The summary balances your three meal slots across all available resources.</p>
                     <form id="dining-form" method="post" action="/dining">
                       <label for="balance">Dining Dollars <span>DD</span></label><div class="input-with-prefix"><span>$</span><input id="balance" name="balance" type="number" min="0" step="0.01" placeholder="350.00" required></div>
@@ -27,7 +27,7 @@ public class DiningPage {
                   </div>
                   <div class="dining-side">
                     <section class="dining-stats" aria-live="polite">
-                      <div class="stats-heading"><div><p class="eyebrow">PACE SUMMARY</p><h2>A balanced daily plan</h2></div><span class="live-indicator">LIVE</span></div>
+                      <div class="stats-heading"><div><p class="eyebrow">DAILY ESTIMATE</p><h2>Meal plan summary</h2></div><span class="live-indicator">LIVE</span></div>
                       <div class="primary-stat"><span>Dining Dollars budget / day</span><strong id="daily-total">—</strong><small id="daily-caption">Enter your balances to map the meal coverage</small></div>
                       <div class="stat-grid">
                         <div class="stat-cell"><span>Swipe pool</span><strong id="swipe-meals">—</strong></div>
@@ -36,7 +36,7 @@ public class DiningPage {
                         <div class="stat-cell"><span>Meals planned / day</span><strong>3</strong></div>
                       </div>
                       <div class="meal-plan">
-                        <div class="meal-plan-heading"><div><p class="eyebrow">THREE MEALS, THREE RESOURCES</p><h3>Suggested daily coverage</h3></div><span>Per day</span></div>
+                        <div class="meal-plan-heading"><div><p class="eyebrow">MEAL BREAKDOWN</p><h3>Estimated meals per day</h3></div><span>Per day</span></div>
                         <div class="meal-row"><div class="meal-label"><span>Swipe meals</span></div><div class="meal-track"><span id="swipe-bar"></span></div><strong id="swipe-daily">—</strong></div>
                         <div class="meal-row"><div class="meal-label"><span>Exchange meals</span></div><div class="meal-track"><span id="exchange-bar"></span></div><strong id="exchange-daily">—</strong></div>
                         <div class="meal-row"><div class="meal-label"><span>DD paid meals</span></div><div class="meal-track"><span id="dollar-bar"></span></div><strong id="dollar-meal">—</strong></div>

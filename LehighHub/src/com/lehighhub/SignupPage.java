@@ -10,9 +10,9 @@ public final class SignupPage {
         int currentYear = Year.now().getValue();
         int latestYear = currentYear + 4;
         String content = "<section class=\"account-hero\"><p class=\"eyebrow\">YOUR LU LINK</p>"
-                + "<h1>Make this place<br><em>your own.</em></h1><p>Create a lightweight demo profile to collect your interests and campus details in one spot.</p></section>"
+                + "<h1>Create a demo profile</h1><p>Add your interests and campus details to your profile.</p></section>"
                 + HtmlLayout.notice(message)
-                + "<section class=\"account-card signup-card\"><div class=\"account-card-heading\"><span class=\"account-step\">01</span><div><p class=\"eyebrow\">CREATE A PROFILE</p><h2>Join the hub</h2></div></div>"
+                + "<section class=\"account-card signup-card\"><div class=\"account-card-heading\"><p class=\"eyebrow signup-title\">CREATE A PROFILE</p></div>"
                 + "<div class=\"demo-privacy-note\"><strong>Current students</strong><span>Enter an expected graduation year from " + currentYear + " through " + latestYear + ". This local demo does not verify enrollment.</span></div>"
                 + "<form method=\"post\" action=\"/signup\" class=\"account-form\"><div class=\"form-two-column\"><div><label for=\"signup-name\">Name</label><input id=\"signup-name\" name=\"name\" maxlength=\"60\" autocomplete=\"name\" required placeholder=\"Your name\"></div>"
                 + "<div><label for=\"signup-username\">Username</label><input id=\"signup-username\" name=\"username\" minlength=\"3\" maxlength=\"20\" pattern=\"[A-Za-z0-9_]+\" autocomplete=\"username\" required placeholder=\"e.g. mountainhawk\"><small>3–20 letters, numbers, or underscores. Profanity, slurs, and sexual terms aren’t allowed.</small></div></div>"

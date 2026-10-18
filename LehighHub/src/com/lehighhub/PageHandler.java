@@ -575,22 +575,22 @@ public class PageHandler implements HttpHandler {
     }
 
     private String homePage(StudentProfile profile) {
-        String content = "<section class=\"home-hero\"><div class=\"hero-copy\"><p class=\"eyebrow\">YOUR CAMPUS, CONNECTED</p>"
-                + "<h1>Make the most<br>of <em>Lehigh.</em></h1><p class=\"hero-intro\">A friendly starting point for finding your people, planning your day, and making campus life a little easier.</p>"
-                + "<a class=\"button button-light\" href=\"/clubs\">Explore the hub <span aria-hidden=\"true\">↗</span></a></div>"
+        String content = "<section class=\"home-hero\"><div class=\"hero-copy\"><p class=\"eyebrow\">CAMPUS DIRECTORY</p>"
+                + "<h1>Lehigh<br>campus guide</h1><p class=\"hero-intro\">Find clubs, dining information, bus routes, and campus resources.</p>"
+                + "<a class=\"button button-light\" href=\"/clubs\">Browse clubs <span aria-hidden=\"true\">↗</span></a></div>"
                 + "<div class=\"hero-art\"><img class=\"hero-library-image\" src=\"/images/linderman.jpeg\" alt=\"Interior of Linderman Library, with balconies and bookshelves\"><span class=\"hero-caption\">LINDERMAN LIBRARY · LEHIGH UNIVERSITY</span></div></section>"
                 + "<div class=\"sample-banner\"><span class=\"sample-dot\"></span><strong>DEMO MODE</strong><span>Everything below uses clearly labeled sample information.</span></div>"
-                + "<section class=\"section-heading\"><div><p class=\"eyebrow\">A FEW GOOD SHORTCUTS</p><h2>Campus life, in one place.</h2></div><p>Built by students, for the everyday stuff.</p></section>"
-                + "<section class=\"feature-grid\"><a class=\"feature-card feature-clubs\" href=\"/clubs\"><span class=\"feature-number\">01 / COMMUNITY</span><span class=\"feature-icon\">✳</span><h3>Find your people</h3><p>Browse a sample club board and draft a bulletin post.</p><span class=\"card-arrow\">↗</span></a>"
-                + "<a class=\"feature-card feature-dining\" href=\"/dining\"><span class=\"feature-number\">02 / FOOD</span><span class=\"feature-icon\">◒</span><h3>Plan your dining dollars</h3><p>Turn a sample balance into a simple daily target.</p><span class=\"card-arrow\">↗</span></a>"
-                + "<a class=\"feature-card feature-buses\" href=\"/buses\"><span class=\"feature-number\">03 / GETTING AROUND</span><span class=\"feature-icon\">↗</span><h3>Find a bus route</h3><p>Check active schedules, ordered stops, and stop locations.</p><span class=\"card-arrow\">↗</span></a>"
-                + "<a class=\"feature-card feature-resources\" href=\"/resources\"><span class=\"feature-number\">04 / SUPPORT</span><span class=\"feature-icon\">＋</span><h3>Discover resources</h3><p>Find official campus services, student tools, and learning resources.</p><span class=\"card-arrow\">↗</span></a></section>"
-                + "<section class=\"home-note\"><span class=\"note-mark\">H</span><p><strong>A small hub for big campus energy.</strong><br>Made as a student hackathon prototype. Always check official Lehigh channels for current details.</p></section>";
+                + "<section class=\"section-heading\"><div><p class=\"eyebrow\">CAMPUS TOOLS</p><h2>Campus information</h2></div><p>Clubs, dining, buses, and resources.</p></section>"
+                + "<section class=\"feature-grid\"><a class=\"feature-card feature-clubs\" href=\"/clubs\"><span class=\"feature-number\">COMMUNITY</span><span class=\"feature-icon\">✳</span><h3>Clubs &amp; meetups</h3><p>View sample clubs and create a meetup post.</p><span class=\"card-arrow\">↗</span></a>"
+                + "<a class=\"feature-card feature-dining\" href=\"/dining\"><span class=\"feature-number\">FOOD</span><span class=\"feature-icon\">◒</span><h3>Dining Dollar planner</h3><p>Estimate meal plan use across a date range.</p><span class=\"card-arrow\">↗</span></a>"
+                + "<a class=\"feature-card feature-buses\" href=\"/buses\"><span class=\"feature-number\">GETTING AROUND</span><span class=\"feature-icon\">↗</span><h3>Bus schedules</h3><p>View routes, stop times, and maps.</p><span class=\"card-arrow\">↗</span></a>"
+                + "<a class=\"feature-card feature-resources\" href=\"/resources\"><span class=\"feature-number\">SUPPORT</span><span class=\"feature-icon\">＋</span><h3>Student resources</h3><p>Browse campus services and academic links.</p><span class=\"card-arrow\">↗</span></a></section>"
+                + "<section class=\"home-note\"><span class=\"note-mark\">i</span><p><strong>Prototype notice</strong><br>This is a student hackathon prototype. Check official Lehigh channels for current information.</p></section>";
         return HtmlLayout.page("Home", "home", "", content, profile);
     }
 
     private String notFoundPage(StudentProfile profile) {
-        return HtmlLayout.page("Not found", "home", "", "<section class=\"page-hero\"><p class=\"eyebrow\">404 · LOST ON THE MOUNTAIN</p><h1>That page isn't here.</h1><a class=\"button button-dark\" href=\"/\">Back to home</a></section>", profile);
+        return HtmlLayout.page("Not found", "home", "", "<section class=\"page-hero\"><p class=\"eyebrow\">404 · PAGE NOT FOUND</p><h1>That page isn't here.</h1><a class=\"button button-dark\" href=\"/\">Back to home</a></section>", profile);
     }
 
     private void serveCss(HttpExchange exchange, String fileName) throws IOException {

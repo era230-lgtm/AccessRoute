@@ -47,12 +47,35 @@ public final class HtmlLayout {
         }
         html.append("</a></div></div></header>");
         html.append("<main id=\"main-content\" class=\"page-wrap\">").append(content).append("</main>");
-        html.append("<footer class=\"site-footer\"><div><span>LU LINK</span><span>Built for the Mountain Hawk community</span></div>");
+        html.append("<footer class=\"site-footer\"><div><span>LU LINK</span><span>Lehigh campus resources</span></div>");
         html.append("<p>Hackathon prototype · Sample information only · Not an official university service</p></footer>");
-        html.append("<div class=\"custom-cursor\" popover=\"manual\" aria-hidden=\"true\"></div>");
-        html.append("<script>(function(){if(!window.matchMedia('(hover: hover) and (pointer: fine)').matches)return;const cursor=document.querySelector('.custom-cursor');document.documentElement.classList.add('custom-cursor-enabled');if(cursor.showPopover)cursor.showPopover();window.raiseCustomCursor=function(){if(!cursor.showPopover)return;if(cursor.matches(':popover-open'))cursor.hidePopover();cursor.showPopover();};let visible=false;function move(event){cursor.style.left=event.clientX+'px';cursor.style.top=event.clientY+'px';if(!visible){cursor.classList.add('is-visible');visible=true;}const target=event.target instanceof Element?event.target:null;cursor.classList.toggle('is-ring',!!(target&&target.closest('a,button,select,input:not([type=checkbox]):not([type=radio]),textarea,input[type=checkbox],input[type=radio],label.interest-choice,.post-topic-choice,.post-access-options label,[role=button]')));}document.addEventListener('pointermove',move);document.addEventListener('pointerleave',()=>cursor.classList.remove('is-visible'));document.addEventListener('pointerenter',()=>cursor.classList.add('is-visible'));})();</script>");
+        html.append(customCursorMarkup());
         html.append("</body></html>");
         return html.toString();
+    }
+
+    static String customCursorMarkup() {
+        return "<div class=\"custom-cursor\" popover=\"manual\" aria-hidden=\"true\"></div>"
+                + "<script>\n"
+                + "(function(){\n"
+                + "  if(!window.matchMedia('(hover: hover) and (pointer: fine)').matches)return;\n"
+                + "  const cursor=document.querySelector('.custom-cursor'),positionKey='lehighhub-cursor-position';\n"
+                + "  const interactive='a,button,select,input:not([type=checkbox]):not([type=radio]),textarea,input[type=checkbox],input[type=radio],label.interest-choice,.post-topic-choice,.post-access-options label,[role=button]';\n"
+                + "  document.documentElement.classList.add('custom-cursor-enabled');\n"
+                + "  if(cursor.showPopover)cursor.showPopover();\n"
+                + "  window.raiseCustomCursor=function(){if(!cursor.showPopover)return;if(cursor.matches(':popover-open'))cursor.hidePopover();cursor.showPopover();};\n"
+                + "  function show(){cursor.classList.add('is-visible');}\n"
+                + "  function restorePosition(){try{const saved=JSON.parse(sessionStorage.getItem(positionKey)||'null');if(saved&&Number.isFinite(saved.x)&&Number.isFinite(saved.y)){cursor.style.left=saved.x+'px';cursor.style.top=saved.y+'px';show();return true;}}catch(ignored){}return false;}\n"
+                + "  function move(event){cursor.style.left=event.clientX+'px';cursor.style.top=event.clientY+'px';try{sessionStorage.setItem(positionKey,JSON.stringify({x:event.clientX,y:event.clientY}));}catch(ignored){}show();const target=event.target instanceof Element?event.target:null;cursor.classList.toggle('is-ring',!!(target&&target.closest(interactive)));}\n"
+                + "  function focus(event){const target=event.target instanceof Element?event.target:null;if(!restorePosition()&&target){const rect=target.getBoundingClientRect();cursor.style.left=(rect.left+rect.width/2)+'px';cursor.style.top=(rect.top+rect.height/2)+'px';}show();if(target)cursor.classList.toggle('is-ring',!!target.closest(interactive));}\n"
+                + "  restorePosition();\n"
+                + "  document.addEventListener('pointermove',move);\n"
+                + "  document.addEventListener('pointerleave',()=>cursor.classList.remove('is-visible'));\n"
+                + "  document.addEventListener('pointerenter',event=>{if(Number.isFinite(event.clientX)&&Number.isFinite(event.clientY))move(event);else restorePosition();});\n"
+                + "  document.addEventListener('focusin',focus);\n"
+                + "  window.addEventListener('pageshow',restorePosition);\n"
+                + "  window.addEventListener('focus',restorePosition);\n"
+                + "})();</script>";
     }
 
     private static void navLink(StringBuilder html, String href, String label, boolean active) {
